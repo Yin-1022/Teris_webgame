@@ -251,7 +251,6 @@ function resetPiece() {
       mergePiece();
       draw();
       gameOver();
-      return;
     }
   }
 }
