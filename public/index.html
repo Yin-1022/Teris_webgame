@@ -3,51 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tetris Online</title>
+  <title>Tetris Multiplayer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="menu">
-    <h1>Tetris</h1>
-    <button id="singleBtn">單人遊戲</button>
-    <button id="multiBtn">多人遊戲</button>
+  <h1>🧩 Tetris Multiplayer</h1>
 
-    <div id="multiMenu" style="display: none;">
-      <button id="createRoomBtn">建立新房間</button>
-      <button id="joinRoomBtn">加入房間</button>
-      <input id="roomInput" placeholder="輸入房間代碼" style="display: none;" />
-      <button id="confirmJoinBtn" style="display: none;">加入</button>
+  <div id="menu">
+    <button onclick="startSinglePlayer()">單人遊戲</button>
+    <button onclick="startMultiplayer()">多人遊戲</button>
+  </div>
+
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="300" height="600" style="display: none;"></canvas>
+    <div id="scoreBoard" style="display: none;">
+      <p>分數: <span id="score">0</span></p>
+      <p>下一個方塊:</p>
+      <canvas id="previewCanvas" width="120" height="120"></canvas>
+      <p>儲存的方塊:</p>
+      <canvas id="holdCanvas" width="120" height="120"></canvas>
     </div>
   </div>
 
-  <canvas id="gameCanvas" width="300" height="600" style="display: none;"></canvas>
-
-  <div id="roomInfo" style="display: none;"></div>
-
   <script src="/socket.io/socket.io.js"></script>
-  <script src="js/game-single.js" type="module"></script>
-  <script src="js/game-multi.js" type="module"></script>
-  <script>
-    const singleBtn = document.getElementById('singleBtn');
-    const multiBtn = document.getElementById('multiBtn');
-    const multiMenu = document.getElementById('multiMenu');
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    const joinRoomBtn = document.getElementById('joinRoomBtn');
-    const roomInput = document.getElementById('roomInput');
-    const confirmJoinBtn = document.getElementById('confirmJoinBtn');
-
-    singleBtn.onclick = () => startSinglePlayer();
-    multiBtn.onclick = () => multiMenu.style.display = 'block';
-
-    createRoomBtn.onclick = () => createRoom();
-    joinRoomBtn.onclick = () => {
-      roomInput.style.display = 'inline';
-      confirmJoinBtn.style.display = 'inline';
-    };
-    confirmJoinBtn.onclick = () => {
-      const code = roomInput.value;
-      joinRoom(code);
-    };
-  </script>
+  <script src="game-single.js"></script>
 </body>
 </html>
