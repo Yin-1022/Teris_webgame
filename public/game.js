@@ -8,6 +8,8 @@ const previewCtx = previewCanvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 const scoreBoard = document.getElementById('scoreBoard');
 const menu = document.getElementById('menu');
+const holdCanvas = document.getElementById('holdCanvas');
+const holdCtx = holdCanvas.getContext('2d');
 
 const COLS = 10;
 const ROWS = 20;
@@ -108,6 +110,31 @@ function drawPreview() {
   drawMatrix(nextPiece.shape, 1, 1, previewCtx);
 }
 
+function drawHold() {
+  holdCtx.clearRect(0, 0, holdCanvas.width, holdCanvas.height);
+  if (holdPiece) {
+    drawMatrix(holdPiece.shape, 1, 1, holdCtx);
+  }
+}
+
+function holdCurrentPiece() {
+  if (holdUsed) return;
+
+  if (!holdPiece) {
+    holdPiece = { ...currentPiece }; // clone current
+    currentPiece = nextPiece;
+    nextPiece = createPiece(randomType());
+  } else {
+    [currentPiece, holdPiece] = [holdPiece, currentPiece];
+    currentPiece.x = 3;
+    currentPiece.y = 0;
+  }
+
+  drawPreview();
+  drawHold();
+  holdUsed = true;
+}
+
 function mergePiece() {
   currentPiece.shape.forEach((row, y) => {
     row.forEach((value, x) => {
@@ -172,6 +199,7 @@ function resetPiece() {
   currentPiece = nextPiece || createPiece(randomType());
   nextPiece = createPiece(randomType());
   drawPreview();
+  drawHold();
   if (collide()) {
     board = createBoard();
     score = 0;
@@ -228,6 +256,12 @@ socket.on('opponentMove', move => {
 window.addEventListener('keydown', e => {
   if (!currentPiece) return;
   switch (e.key) {
+    case 'c':
+      holdCurrentPiece();
+      break;
+    case 'C':
+      holdCurrentPiece();
+      break;
     case 'ArrowLeft':
       move(-1);
       break;
