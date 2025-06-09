@@ -127,21 +127,59 @@ function collideAt(piece) {
 function draw() {
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawMatrix(board, 0, 0);
-  drawGhostPiece();
-  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
+  if (isGameOver) {
+    // 畫已放置方塊(灰色)
+    drawMatrixGray(board, 0, 0);
+
+    // 畫目前方塊(灰色)
+    drawMatrixGray(currentPiece.shape, currentPiece.x, currentPiece.y);
+
+    // 畫ghost piece 也用灰色
+    const ghost = { ...currentPiece, y: currentPiece.y };
+    while (!collideAt(ghost)) {
+      ghost.y++;
+    }
+    ghost.y--;
+    drawMatrixGray(ghost.shape, ghost.x, ghost.y, ctx);
+
+  } else {
+    drawMatrix(board, 0, 0);
+    drawGhostPiece();
+    drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
+  }
 }
 
 function drawPreview() {
   previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-  drawMatrix(nextPiece.shape, 1, 1, previewCtx);
+  if (isGameOver) {
+    drawMatrixGray(nextPiece.shape, 1, 1, previewCtx);
+  } else {
+    drawMatrix(nextPiece.shape, 1, 1, previewCtx);
+  }
 }
 
 function drawHold() {
   holdCtx.clearRect(0, 0, holdCanvas.width, holdCanvas.height);
-  if (holdPiece) {
-    drawMatrix(holdPiece.shape, 1, 1, holdCtx);
+   if (holdPiece) {
+    if (isGameOver) {
+      drawMatrixGray(holdPiece.shape, 1, 1, holdCtx);
+    } else {
+      drawMatrix(holdPiece.shape, 1, 1, holdCtx);
+    }
   }
+}
+
+function drawMatrixGray(matrix, offsetX, offsetY, context = ctx) {
+  context.fillStyle = '#777'; // 灰色
+  context.strokeStyle = '#444'; // 深灰邊框
+  matrix.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (value) {
+        context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+      }
+    });
+  });
 }
 
 function holdCurrentPiece() {
@@ -249,6 +287,9 @@ function resetPiece() {
 
     if (currentPiece.y < 1 || pieceHitsTop(currentPiece)) {
       isGameOver = true;
+      draw();
+      drawPreview();
+      drawHold();
       drawGameOver();
       return; // 不再產生新方塊
     }
