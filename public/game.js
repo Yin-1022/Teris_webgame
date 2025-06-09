@@ -241,32 +241,11 @@ function resetPiece() {
   holdUsed = false;
   drawPreview();
   drawHold();
-  if (collide()) {
-  // 檢查是否有碰撞點的 y >= 0，代表方塊已經碰到畫面內的格子
-  const shape = currentPiece.shape;
-  const px = currentPiece.x;
-  const py = currentPiece.y;
-  let gameOver = false;
-
-  for (let y = 0; y < shape.length; y++) {
-    for (let x = 0; x < shape[y].length; x++) {
-      if (shape[y][x]) {
-        const by = py + y;
-        if (by >= 0 && board[by] && board[by][px + x]) {
-            gameOver = true;
-            break;
-          }
-        }
-      }
-      if (gameOver) break;
-    }
-
-    if (gameOver) {
-      board = createBoard();
-      score = 0;
-      scoreEl.textContent = score;
-      alert('💀 Game Over');
-    }
+  if (collide() && currentPiece.y >= 0) {
+    setTimeout(() => alert('💀 Game Over'), 10);
+    board = createBoard();
+    score = 0;
+    scoreEl.textContent = score;
   }
 }
 
