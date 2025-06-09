@@ -41,8 +41,9 @@ const COLORS = {
 };
 
 function createPiece(type) {
+  const shape = PIECES[type].map(row => row.map(cell => (cell ? type : 0)));
   return {
-    shape: PIECES[type],
+    shape,
     x: 3,
     y: 0,
     type
@@ -59,11 +60,10 @@ function createBoard() {
 
 function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
-  context.fillStyle = COLORS[type] || 'cyan';
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        context.fillStyle = 'cyan';
+        context.fillStyle = COLORS[type] || 'cyan';
         context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         context.strokeStyle = '#222';
         context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
