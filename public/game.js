@@ -173,6 +173,24 @@ function drop() {
   dropCounter = 0;
 }
 
+function hardDrop() {
+  let dropDistance = 0;
+  while (!collide()) {
+    currentPiece.y++;
+    dropDistance++;
+  }
+  currentPiece.y--; // 回到最後有效位置
+  dropDistance--;
+  mergePiece();
+  clearLines();
+  resetPiece();
+  dropCounter = 0;
+
+  // 加分（可選：每格 +10 分）
+  score += dropDistance * 10;
+  scoreEl.textContent = score;
+}
+
 function clearLines() {
   let linesCleared = 0;
   board = board.filter(row => {
@@ -275,6 +293,10 @@ window.addEventListener('keydown', e => {
       break;
     case 'C':
       holdCurrentPiece();
+      break;
+    case ' ': // 空白鍵
+      e.preventDefault(); // 避免滾動網頁
+      hardDrop();
       break;
     case 'ArrowLeft':
       move(-1);
