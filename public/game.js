@@ -7,6 +7,7 @@ const previewCanvas = document.getElementById('previewCanvas');
 const previewCtx = previewCanvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 const scoreBoard = document.getElementById('scoreBoard');
+const gameContainer = document.getElementById('gameContainer');
 const menu = document.getElementById('menu');
 
 const COLS = 10;
@@ -198,8 +199,7 @@ function update(time = 0) {
 
 function startSinglePlayer() {
   menu.style.display = 'none';
-  canvas.style.display = 'block';
-  scoreBoard.style.display = 'block';
+  gameContainer.style.display = 'flex';
   board = createBoard();
   score = 0;
   scoreEl.textContent = score;

@@ -25,6 +25,20 @@ button:hover {
   background: #666;
 }
 
-#scoreBoard {
+#gameContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
   margin-top: 20px;
+}
+
+#scoreBoard {
+  text-align: left;
+}
+
+#previewCanvas {
+  background: #222;
+  display: block;
+  margin-top: 10px;
 }
