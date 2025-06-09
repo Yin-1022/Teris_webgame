@@ -1,6 +1,8 @@
 const socket = io();
 
 let room = null;
+let holdPiece = null;
+let holdUsed = false; // 每回合只能使用一次
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const previewCanvas = document.getElementById('previewCanvas');
