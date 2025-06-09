@@ -394,16 +394,24 @@ window.addEventListener('keydown', e => {
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
-      const original = currentPiece.shape;
+      const originalShape = currentPiece.shape;
       const originalX = currentPiece.x;
       const originalY = currentPiece.y;
-      const offsets = [0, -1, 1, -2, 2]; // 嘗試左右偏移
 
-      currentPiece.shape = rotated;
+      const offsets = [
+        [0, 0],
+        [-1, 0], [1, 0],
+        [-2, 0], [2, 0],
+        [0, 1], [0, 2]
+      ];
 
       let rotatedSuccessfully = false;
-      for (let dx of offsets) {
+
+      for (const [dx, dy] of offsets) {
+        currentPiece.shape = rotated;
         currentPiece.x = originalX + dx;
+        currentPiece.y = originalY + dy;
+
         if (!collide()) {
           rotatedSuccessfully = true;
           break;
@@ -411,12 +419,11 @@ window.addEventListener('keydown', e => {
       }
 
       if (!rotatedSuccessfully) {
-        currentPiece.shape = original;
+        currentPiece.shape = originalShape;
         currentPiece.x = originalX;
         currentPiece.y = originalY;
-      } else {
-        currentPiece.y = originalY; // 保持原來的 y 值
       }
+
       break;
     }
     case ' ':
