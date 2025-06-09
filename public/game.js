@@ -289,6 +289,30 @@ function rotateCounterClockwise(matrix) {
   return matrix[0].map((_, i) => matrix.map(row => row[i])).reverse();
 }
 
+function attemptRotation(rotatedShape) {
+  const originalShape = currentPiece.shape;
+  const originalX = currentPiece.x;
+  const originalY = currentPiece.y;
+
+  const offsets = [
+    [0, 0], [-1, 0], [1, 0], [-2, 0], [2, 0],
+    [0, 1], [0, 2], [0, -1], [-1, 1], [1, 1]
+  ]; // 最多10次嘗試
+
+  for (const [dx, dy] of offsets) {
+    currentPiece.shape = rotatedShape;
+    currentPiece.x = originalX + dx;
+    currentPiece.y = originalY + dy;
+
+    if (!collide()) return; // 成功旋轉
+  }
+
+  // 若全部都撞到，回復原狀
+  currentPiece.shape = originalShape;
+  currentPiece.x = originalX;
+  currentPiece.y = originalY;
+}
+
 function move(dir) {
   currentPiece.x += dir;
   if (collide()) {
@@ -416,70 +440,12 @@ window.addEventListener('keydown', e => {
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
-      const originalShape = currentPiece.shape;
-      const originalX = currentPiece.x;
-      const originalY = currentPiece.y;
-
-      const offsets = [
-        [0, 0],
-        [-1, 0], [1, 0],
-        [-2, 0], [2, 0],
-        [0, 1], [0, 2]
-      ];
-
-      let rotatedSuccessfully = false;
-
-      for (const [dx, dy] of offsets) {
-        currentPiece.shape = rotated;
-        currentPiece.x = originalX + dx;
-        currentPiece.y = originalY + dy;
-
-        if (!collide()) {
-          rotatedSuccessfully = true;
-          break;
-        }
-      }
-
-      if (!rotatedSuccessfully) {
-        currentPiece.shape = originalShape;
-        currentPiece.x = originalX;
-        currentPiece.y = originalY;
-      }
-
+      attemptRotation(rotated);
       break;
     }
     case 'z': {
       const rotated = rotateCounterClockwise(currentPiece.shape);
-      const originalShape = currentPiece.shape;
-      const originalX = currentPiece.x;
-      const originalY = currentPiece.y;
-
-      const offsets = [
-        [0, 0],
-        [-1, 0], [1, 0],
-        [-2, 0], [2, 0],
-        [0, 1], [0, 2]
-      ];
-
-      let rotatedSuccessfully = false;
-
-      for (const [dx, dy] of offsets) {
-        currentPiece.shape = rotated;
-        currentPiece.x = originalX + dx;
-        currentPiece.y = originalY + dy;
-
-        if (!collide()) {
-          rotatedSuccessfully = true;
-          break;
-        }
-      }
-
-      if (!rotatedSuccessfully) {
-        currentPiece.shape = originalShape;
-        currentPiece.x = originalX;
-        currentPiece.y = originalY;
-      }
-
+      attemptRotation(rotated);
       break;
     }
     case ' ':
