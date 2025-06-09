@@ -235,13 +235,33 @@ function move(dir) {
   }
 }
 
+function pieceHitsTop(piece) {
+  const { shape, x: px, y: py } = piece;
+  for (let y = 0; y < shape.length; y++) {
+    for (let x = 0; x < shape[y].length; x++) {
+      if (
+        shape[y][x] &&
+        py + y >= 0 && // 在畫面中（非隱藏區）
+        py + y < ROWS &&
+        px + x >= 0 &&
+        px + x < COLS &&
+        board[py + y][px + x]
+      ) {
+        if (py + y === 0) return true; // 撞到畫面最上方才算 Game Over
+      }
+    }
+  }
+  return false;
+}
+
 function resetPiece() {
   currentPiece = nextPiece || createPiece(randomType());
   nextPiece = createPiece(randomType());
   holdUsed = false;
   drawPreview();
   drawHold();
-  if (collide() && currentPiece.y >= 0) {
+
+  if (pieceHitsTop(currentPiece)) {
     board = createBoard();
     score = 0;
     scoreEl.textContent = score;
