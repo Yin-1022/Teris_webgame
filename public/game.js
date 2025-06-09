@@ -204,10 +204,24 @@ function resetPiece() {
   drawPreview();
   drawHold();
   if (collide()) {
-    board = createBoard();
-    score = 0;
-    scoreEl.textContent = score;
-    alert('💀 Game Over');
+  // 檢查是否有碰撞發生在最上方（第 0～1 行）
+  const isGameOver = currentPiece.shape.some((row, y) =>
+      row.some((value, x) => {
+        return (
+          value &&
+          currentPiece.y + y <= 0 &&
+          board[currentPiece.y + y]?.[currentPiece.x + x]
+        );
+      })
+    );
+
+    if (isGameOver) {
+      board = createBoard();
+      score = 0;
+      scoreEl.textContent = score;
+      alert('💀 Game Over');
+      return;
+    }
   }
 }
 
