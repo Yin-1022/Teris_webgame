@@ -30,11 +30,22 @@ const PIECES = {
   L: [[0, 0, 0], [0, 0, 1], [1, 1, 1]]
 };
 
+const COLORS = {
+  I: 'cyan',
+  O: 'yellow',
+  T: 'purple',
+  S: 'green',
+  Z: 'red',
+  J: 'blue',
+  L: 'orange'
+};
+
 function createPiece(type) {
   return {
     shape: PIECES[type],
     x: 3,
-    y: 0
+    y: 0,
+    type
   };
 }
 
@@ -48,6 +59,7 @@ function createBoard() {
 
 function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
+  context.fillStyle = COLORS[type] || 'cyan';
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
@@ -67,7 +79,7 @@ function drawGhostPiece() {
     ghost.y++;
   }
   ghost.y--;
-  drawMatrix(ghost.shape, ghost.x, ghost.y, ctx, true);
+  drawMatrix(ghost.shape, ghost.x, ghost.y, ctx, true, ghost.type);
 }
 
 function collideAt(piece) {
@@ -90,12 +102,12 @@ function draw() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   drawMatrix(board, 0, 0);
   drawGhostPiece();
-  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
+  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y, ctx, false, currentPiece.type);
 }
 
 function drawPreview() {
   previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-  drawMatrix(nextPiece.shape, 1, 1, previewCtx);
+  drawMatrix(nextPiece.shape, 1, 1, previewCtx, false, nextPiece.type);
 }
 
 function mergePiece() {
