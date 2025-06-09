@@ -84,12 +84,12 @@ function createBoard() {
   return matrix;
 }
 
-function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
+function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false, gray = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        context.fillStyle = 'cyan';
+        context.fillStyle = gray ? '#666' : 'cyan';
         context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         context.strokeStyle = '#222';
         context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
@@ -235,25 +235,6 @@ function move(dir) {
   }
 }
 
-// function pieceHitsTop(piece) {
-//   const { shape, x: px, y: py } = piece;
-//   for (let y = 0; y < shape.length; y++) {
-//     for (let x = 0; x < shape[y].length; x++) {
-//       if (
-//         shape[y][x] &&
-//         py + y >= 0 && // 在畫面中（非隱藏區）
-//         py + y < ROWS &&
-//         px + x >= 0 &&
-//         px + x < COLS &&
-//         board[py + y][px + x]
-//       ) {
-//         if (py + y === 0) return true; // 撞到畫面最上方才算 Game Over
-//       }
-//     }
-//   }
-//   return false;
-// }
-
 function resetPiece() {
   currentPiece = nextPiece || createPiece(randomType());
   nextPiece = createPiece(randomType());
@@ -261,33 +242,27 @@ function resetPiece() {
   drawPreview();
   drawHold();
 
-  // if (pieceHitsTop(currentPiece)) {
-  //   board = createBoard();
-  //   score = 0;
-  //   scoreEl.textContent = score;
-  //   dropInterval = 1000;
-  //   alert('💀 Game Over');
-  // }
-
   if (collide()) {
     // 把它合併進場地（就算是在上方隱藏區）
     mergePiece();
     draw(); // 立即繪製，顯示最終畫面
 
-    // 如果這個方塊佔用了第 0 行，就 Game Over
-    if (currentPiece.y < 1 || pieceHitsTop(currentPiece)) {
-      alert('💀 Game Over');
-      board = createBoard();
-      score = 0;
-      scoreEl.textContent = score;
+      if (collide()) {
+      mergePiece();
+      draw();
+      gameOver();
+      return;
     }
-
-    // 再次產生下一個方塊
-    currentPiece = nextPiece || createPiece(randomType());
-    nextPiece = createPiece(randomType());
-    drawPreview();
-    drawHold();
   }
+}
+
+function gameOver() {
+  draw(); // 畫出目前畫面
+  // 把整個畫面重新畫為灰色方塊
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawMatrix(board, 0, 0, ctx, false, true); // 灰色重畫
+  document.getElementById('gameOverMessage').style.display = 'block';
 }
 
 function randomType() {
