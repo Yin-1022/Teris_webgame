@@ -244,30 +244,29 @@ function resetPiece() {
   drawHold();
 
   if (collide()) {
-  mergePiece();
-  draw();
+    mergePiece();
+    draw();
 
-  if (currentPiece.y < 1 || pieceHitsTop(currentPiece)) {
-    isGameOver = true;
-    drawGameOver();
-    return; // 不再產生新方塊
+    if (currentPiece.y < 1 || pieceHitsTop(currentPiece)) {
+      isGameOver = true;
+      drawGameOver();
+      return; // 不再產生新方塊
+    }
+
+    currentPiece = nextPiece || createPiece(randomType());
+    nextPiece = createPiece(randomType());
+    drawPreview();
+    drawHold();
   }
-
-  currentPiece = nextPiece || createPiece(randomType());
-  nextPiece = createPiece(randomType());
-  drawPreview();
-  drawHold();
-}
 }
 
 function drawGameOver() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
   ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
-
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 36px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('💀 GAME OVER 💀', canvas.width / 2, canvas.height / 2 + 12);
+  ctx.fillText('💀 GAME OVER 💀', canvas.width / 3, canvas.height / 2 + 12);
 }
 
 function randomType() {
@@ -337,8 +336,6 @@ window.addEventListener('keydown', e => {
   if (isGameOver) {
     if (e.key) {
       isGameOver = false;
-      resetPiece();
-      update();
       startSinglePlayer();
     }
     return;
