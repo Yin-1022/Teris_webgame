@@ -28,6 +28,8 @@ let score = 0;
 let lockDelay = 500; // 鎖定延遲毫秒數
 let lockTimer = 0;
 let pieceTouchingGround = false;
+let groundRotationCount = 0;
+const maxGroundRotations = 15; // 你可以視情況調整為 1～15 次
 
 let keyState = {
   left: false,
@@ -290,6 +292,10 @@ function rotateCounterClockwise(matrix) {
 }
 
 function attemptRotation(rotatedShape) {
+  if (isTouchingGround && groundRotationCount >= maxGroundRotations) {
+    return; // 已觸地且旋轉次數已滿
+  }
+
   const originalShape = currentPiece.shape;
   const originalX = currentPiece.x;
   const originalY = currentPiece.y;
@@ -304,7 +310,12 @@ function attemptRotation(rotatedShape) {
     currentPiece.x = originalX + dx;
     currentPiece.y = originalY + dy;
 
-    if (!collide()) return; // 成功旋轉
+    if (!collide()){
+      if (isTouchingGround) {
+        groundRotationCount++;
+      }
+      return;
+    }; // 成功旋轉
   }
 
   // 若全部都撞到，回復原狀
