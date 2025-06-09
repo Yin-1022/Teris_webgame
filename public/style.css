@@ -26,5 +26,14 @@ button:hover {
 }
 
 #scoreBoard {
+  margin-left: 20px;
+  text-align: left;
+}
+
+#gameContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
   margin-top: 20px;
 }
