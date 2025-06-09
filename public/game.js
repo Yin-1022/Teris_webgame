@@ -200,6 +200,7 @@ function move(dir) {
 function resetPiece() {
   currentPiece = nextPiece || createPiece(randomType());
   nextPiece = createPiece(randomType());
+  holdUsed = false;
   drawPreview();
   drawHold();
   if (collide()) {
