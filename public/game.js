@@ -45,10 +45,21 @@ const COLORS = {
 };
 
 function createPiece(type) {
+  const shape = PIECES[type];
+  
+  // 找出 shape 中第一個含有非 0 值的 row（offset）
+  let offsetY = 0;
+  for (let y = 0; y < shape.length; y++) {
+    if (shape[y].some(cell => cell !== 0)) {
+      offsetY = y;
+      break;
+    }
+  }
+
   return {
-    shape: PIECES[type],
-    x: 3,
-    y: 0
+    shape,
+    x: Math.floor((COLS - shape[0].length) / 2), // 居中
+    y: -offsetY // 使最上方有內容的那一列貼齊畫面頂端
   };
 }
 
@@ -204,24 +215,10 @@ function resetPiece() {
   drawPreview();
   drawHold();
   if (collide()) {
-  // 檢查是否有碰撞發生在最上方（第 0～1 行）
-  const isGameOver = currentPiece.shape.some((row, y) =>
-      row.some((value, x) => {
-        return (
-          value &&
-          currentPiece.y + y <= 0 &&
-          board[currentPiece.y + y]?.[currentPiece.x + x]
-        );
-      })
-    );
-
-    if (isGameOver) {
-      board = createBoard();
-      score = 0;
-      scoreEl.textContent = score;
-      alert('💀 Game Over');
-      return;
-    }
+    board = createBoard();
+    score = 0;
+    scoreEl.textContent = score;
+    alert('💀 Game Over');
   }
 }
 
