@@ -24,6 +24,19 @@ let dropInterval = 1000;
 let lastTime = 0;
 let score = 0;
 
+let keyState = {
+  left: false,
+  right: false,
+  down: false
+};
+
+let moveDelay = 100; // 移動間隔（毫秒）
+let moveTimer = {
+  left: 0,
+  right: 0,
+  down: 0
+};
+
 const PIECES = {
   I: [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0]],
   O: [[1, 1], [1, 1]],
@@ -185,10 +198,6 @@ function hardDrop() {
   clearLines();
   resetPiece();
   dropCounter = 0;
-
-  // 加分（可選：每格 +10 分）
-  score += dropDistance * 10;
-  scoreEl.textContent = score;
 }
 
 function clearLines() {
@@ -252,6 +261,18 @@ function update(time = 0) {
   if (dropCounter > dropInterval) {
     drop();
   }
+  if (keyState.left && time - moveTimer.left > moveDelay) {
+    move(-1);
+    moveTimer.left = time;
+  }
+  if (keyState.right && time - moveTimer.right > moveDelay) {
+    move(1);
+    moveTimer.right = time;
+  }
+  if (keyState.down && time - moveTimer.down > moveDelay) {
+    drop();
+    moveTimer.down = time;
+  }
   draw();
   requestAnimationFrame(update);
 }
@@ -288,33 +309,45 @@ socket.on('opponentMove', move => {
 window.addEventListener('keydown', e => {
   if (!currentPiece) return;
   switch (e.key) {
-    case 'c':
-      holdCurrentPiece();
-      break;
-    case 'C':
-      holdCurrentPiece();
-      break;
-    case ' ': // 空白鍵
-      e.preventDefault(); // 避免滾動網頁
-      hardDrop();
-      break;
     case 'ArrowLeft':
-      move(-1);
+      keyState.left = true;
       break;
     case 'ArrowRight':
-      move(1);
+      keyState.right = true;
       break;
     case 'ArrowDown':
-      drop();
+      keyState.down = true;
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
       const original = currentPiece.shape;
       currentPiece.shape = rotated;
       if (collide()) {
-        currentPiece.shape = original; // revert if invalid
+        currentPiece.shape = original;
       }
       break;
     }
+    case ' ':
+      e.preventDefault();
+      hardDrop();
+      break;
+    case 'c':
+    case 'C':
+      holdCurrentPiece();
+      break;
+  }
+});
+
+window.addEventListener('keyup', e => {
+  switch (e.key) {
+    case 'ArrowLeft':
+      keyState.left = false;
+      break;
+    case 'ArrowRight':
+      keyState.right = false;
+      break;
+    case 'ArrowDown':
+      keyState.down = false;
+      break;
   }
 });
