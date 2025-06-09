@@ -14,7 +14,6 @@ const menu = document.getElementById('menu');
 const holdCanvas = document.getElementById('holdCanvas');
 const holdCtx = holdCanvas.getContext('2d');
 
-
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
@@ -25,11 +24,6 @@ let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
 let score = 0;
-let lockDelay = 500; // 鎖定延遲毫秒數
-let lockTimer = 0;
-let pieceTouchingGround = false;
-let groundRotationCount = 0;
-const maxGroundRotations = 15; // 你可以視情況調整為 1～15 次
 
 let keyState = {
   left: false,
@@ -220,15 +214,13 @@ function collide() {
   return collideAt(currentPiece);
 }
 
-function drop(deltaTime = 0) {
+function drop() {
   currentPiece.y++;
   if (collide()) {
     currentPiece.y--;
-    isTouchingGround = true;
-    lockTimer = 0;
-  } else {
-    isTouchingGround = false;
-    lockTimer = 0;
+    mergePiece();
+    clearLines();
+    resetPiece();
   }
   dropCounter = 0;
 }
@@ -277,39 +269,6 @@ function rotate(matrix) {
 
 function rotateCounterClockwise(matrix) {
   return matrix[0].map((_, i) => matrix.map(row => row[i])).reverse();
-}
-
-function attemptRotation(rotatedShape) {
-  if (isTouchingGround && groundRotationCount >= maxGroundRotations) {
-    return; // 已觸地且旋轉次數已滿
-  }
-
-  const originalShape = currentPiece.shape;
-  const originalX = currentPiece.x;
-  const originalY = currentPiece.y;
-
-  const offsets = [
-    [0, 0], [-1, 0], [1, 0], [-2, 0], [2, 0],
-    [0, 1], [0, 2], [0, -1], [-1, 1], [1, 1]
-  ]; // 最多10次嘗試
-
-  for (const [dx, dy] of offsets) {
-    currentPiece.shape = rotatedShape;
-    currentPiece.x = originalX + dx;
-    currentPiece.y = originalY + dy;
-
-    if (!collide()){
-      if (isTouchingGround) {
-        groundRotationCount++;
-      }
-      return;
-    }; // 成功旋轉
-  }
-
-  // 若全部都撞到，回復原狀
-  currentPiece.shape = originalShape;
-  currentPiece.x = originalX;
-  currentPiece.y = originalY;
 }
 
 function move(dir) {
@@ -369,7 +328,7 @@ function update(time = 0) {
   dropInterval = 1000;
   dropCounter += deltaTime;
   if (dropCounter > dropInterval) {
-    drop(deltaTime);
+    drop();
   }
   if (keyState.left && time - moveTimer.left > moveDelay) {
     move(-1);
@@ -380,22 +339,10 @@ function update(time = 0) {
     moveTimer.right = time;
   }
   if (keyState.down && time - moveTimer.down > moveDelay) {
-    drop(deltaTime);
+    drop();
     moveTimer.down = time;
   }
   draw();
-
-  if (isTouchingGround) {
-    lockTimer += deltaTime;
-    if (lockTimer >= lockDelay) {
-      mergePiece();
-      clearLines();
-      resetPiece();
-      isTouchingGround = false;
-      lockTimer = 0;
-    }
-  }
-
   requestAnimationFrame(update);
 }
 
@@ -451,12 +398,70 @@ window.addEventListener('keydown', e => {
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
-      attemptRotation(rotated);
+      const originalShape = currentPiece.shape;
+      const originalX = currentPiece.x;
+      const originalY = currentPiece.y;
+
+      const offsets = [
+        [0, 0],
+        [-1, 0], [1, 0],
+        [-2, 0], [2, 0],
+        [0, 1], [0, 2]
+      ];
+
+      let rotatedSuccessfully = false;
+
+      for (const [dx, dy] of offsets) {
+        currentPiece.shape = rotated;
+        currentPiece.x = originalX + dx;
+        currentPiece.y = originalY + dy;
+
+        if (!collide()) {
+          rotatedSuccessfully = true;
+          break;
+        }
+      }
+
+      if (!rotatedSuccessfully) {
+        currentPiece.shape = originalShape;
+        currentPiece.x = originalX;
+        currentPiece.y = originalY;
+      }
+
       break;
     }
     case 'z': {
       const rotated = rotateCounterClockwise(currentPiece.shape);
-      attemptRotation(rotated);
+      const originalShape = currentPiece.shape;
+      const originalX = currentPiece.x;
+      const originalY = currentPiece.y;
+
+      const offsets = [
+        [0, 0],
+        [-1, 0], [1, 0],
+        [-2, 0], [2, 0],
+        [0, 1], [0, 2]
+      ];
+
+      let rotatedSuccessfully = false;
+
+      for (const [dx, dy] of offsets) {
+        currentPiece.shape = rotated;
+        currentPiece.x = originalX + dx;
+        currentPiece.y = originalY + dy;
+
+        if (!collide()) {
+          rotatedSuccessfully = true;
+          break;
+        }
+      }
+
+      if (!rotatedSuccessfully) {
+        currentPiece.shape = originalShape;
+        currentPiece.x = originalX;
+        currentPiece.y = originalY;
+      }
+
       break;
     }
     case ' ':
