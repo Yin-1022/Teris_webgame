@@ -218,15 +218,27 @@ function collide() {
   return collideAt(currentPiece);
 }
 
-function drop() {
+function drop(deltaTime = 0) {
   currentPiece.y++;
   if (collide()) {
-    isTouchingGround = true;
     currentPiece.y--;
-  }
-  else {
-    isTouchingGround = false; // 還沒碰到地面
-    lockCounter = 0;          // 移動中就不算落地等待
+
+    if (!isTouchingGround) {
+      isTouchingGround = true;
+      lockTimer = 0;
+    } else {
+      lockTimer += deltaTime;
+      if (lockTimer > lockDelay) {
+        mergePiece();
+        clearLines();
+        resetPiece();
+        isTouchingGround = false;
+        lockTimer = 0;
+      }
+    }
+  } else {
+    isTouchingGround = false;
+    lockTimer = 0;
   }
   dropCounter = 0;
 }
@@ -279,10 +291,8 @@ function rotateCounterClockwise(matrix) {
 
 function move(dir) {
   currentPiece.x += dir;
-   if (collide()) {
+  if (collide()) {
     currentPiece.x -= dir;
-  } else {
-    lockCounter = 0; // 移動後重設落地延遲
   }
 }
 
@@ -336,20 +346,8 @@ function update(time = 0) {
   dropInterval = 1000;
   dropCounter += deltaTime;
   if (dropCounter > dropInterval) {
-    drop();
+    drop(deltaTime);
   }
-
-  if (isTouchingGround) {
-    lockCounter += deltaTime;
-    if (lockCounter > lockDelay) {
-      mergePiece();
-      clearLines();
-      resetPiece();
-      lockCounter = 0;
-      isTouchingGround = false;
-    }
-  }
-
   if (keyState.left && time - moveTimer.left > moveDelay) {
     move(-1);
     moveTimer.left = time;
@@ -359,7 +357,7 @@ function update(time = 0) {
     moveTimer.right = time;
   }
   if (keyState.down && time - moveTimer.down > moveDelay) {
-    drop();
+    drop(deltaTime);
     moveTimer.down = time;
   }
   draw();
@@ -446,10 +444,6 @@ window.addEventListener('keydown', e => {
         currentPiece.shape = originalShape;
         currentPiece.x = originalX;
         currentPiece.y = originalY;
-      }
-      
-      if (rotatedSuccessfully) {
-        lockCounter = 0; // 成功旋轉也重設落地延遲
       }
 
       break;
