@@ -265,6 +265,15 @@ function gameOver() {
   document.getElementById('gameOverMessage').style.display = 'block';
 }
 
+function restartGame() {
+  document.getElementById('gameOverMessage').style.display = 'none';
+  board = createBoard();
+  score = 0;
+  scoreEl.textContent = score;
+  nextPiece = createPiece(randomType());
+  resetPiece();
+}
+
 function randomType() {
   const types = Object.keys(PIECES);
   return types[Math.floor(Math.random() * types.length)];
