@@ -14,6 +14,7 @@ const menu = document.getElementById('menu');
 const holdCanvas = document.getElementById('holdCanvas');
 const holdCtx = holdCanvas.getContext('2d');
 
+
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
@@ -24,6 +25,9 @@ let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
 let score = 0;
+let lockDelay = 500; // 鎖定延遲毫秒數
+let lockTimer = 0;
+let pieceTouchingGround = false;
 
 let keyState = {
   left: false,
@@ -217,10 +221,12 @@ function collide() {
 function drop() {
   currentPiece.y++;
   if (collide()) {
+    isTouchingGround = true;
     currentPiece.y--;
-    mergePiece();
-    clearLines();
-    resetPiece();
+  }
+  else {
+    isTouchingGround = false; // 還沒碰到地面
+    lockCounter = 0;          // 移動中就不算落地等待
   }
   dropCounter = 0;
 }
@@ -330,6 +336,18 @@ function update(time = 0) {
   if (dropCounter > dropInterval) {
     drop();
   }
+
+  if (isTouchingGround) {
+    lockCounter += deltaTime;
+    if (lockCounter > lockDelay) {
+      mergePiece();
+      clearLines();
+      resetPiece();
+      lockCounter = 0;
+      isTouchingGround = false;
+    }
+  }
+
   if (keyState.left && time - moveTimer.left > moveDelay) {
     move(-1);
     moveTimer.left = time;
