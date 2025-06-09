@@ -265,6 +265,7 @@ function resetPiece() {
     board = createBoard();
     score = 0;
     scoreEl.textContent = score;
+    dropInterval = 1000;
     alert('💀 Game Over');
   }
 }
