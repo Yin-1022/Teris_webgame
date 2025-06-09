@@ -279,8 +279,10 @@ function rotateCounterClockwise(matrix) {
 
 function move(dir) {
   currentPiece.x += dir;
-  if (collide()) {
+   if (collide()) {
     currentPiece.x -= dir;
+  } else {
+    lockCounter = 0; // 移動後重設落地延遲
   }
 }
 
@@ -444,6 +446,10 @@ window.addEventListener('keydown', e => {
         currentPiece.shape = originalShape;
         currentPiece.x = originalX;
         currentPiece.y = originalY;
+      }
+      
+      if (rotatedSuccessfully) {
+        lockCounter = 0; // 成功旋轉也重設落地延遲
       }
 
       break;
