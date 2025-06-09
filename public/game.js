@@ -242,10 +242,10 @@ function resetPiece() {
   drawPreview();
   drawHold();
   if (collide() && currentPiece.y >= 0) {
-    setTimeout(() => alert('💀 Game Over'), 10);
     board = createBoard();
     score = 0;
     scoreEl.textContent = score;
+    alert('💀 Game Over');
   }
 }
 
