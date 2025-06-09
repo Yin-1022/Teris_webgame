@@ -58,12 +58,12 @@ function createBoard() {
   return matrix;
 }
 
-function drawMatrix(matrix, offsetX, offsetY, type, context = ctx, ghost = false) {
+function drawMatrix(matrix, offsetX, offsetY, type='I', context = ctx, ghost = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        context.fillStyle = COLORS[type] || 'cyan';
+        context.fillStyle = COLORS[type];
         context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         context.strokeStyle = '#222';
         context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
