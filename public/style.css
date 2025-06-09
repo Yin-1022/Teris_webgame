@@ -37,16 +37,3 @@ button:hover {
   text-align: left;
   margin-top: 20px;
 }
-
-#gameOverMessage {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 30px;
-  border: 2px solid #fff;
-  border-radius: 10px;
-  z-index: 10;
-}

@@ -1,5 +1,6 @@
 const socket = io();
 
+let isGameOver = false;
 let room = null;
 let holdPiece = null;
 let holdUsed = false; // 每回合只能使用一次
@@ -84,12 +85,12 @@ function createBoard() {
   return matrix;
 }
 
-function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false, gray = false) {
+function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        context.fillStyle = gray ? '#666' : 'cyan';
+        context.fillStyle = 'cyan';
         context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         context.strokeStyle = '#222';
         context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
@@ -243,34 +244,30 @@ function resetPiece() {
   drawHold();
 
   if (collide()) {
-    // 把它合併進場地（就算是在上方隱藏區）
-    mergePiece();
-    draw(); // 立即繪製，顯示最終畫面
+  mergePiece();
+  draw();
 
-      if (collide()) {
-      mergePiece();
-      draw();
-      gameOver();
-    }
+  if (currentPiece.y < 1 || pieceHitsTop(currentPiece)) {
+    isGameOver = true;
+    drawGameOver();
+    return; // 不再產生新方塊
   }
-}
 
-function gameOver() {
-  draw(); // 畫出目前畫面
-  // 把整個畫面重新畫為灰色方塊
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawMatrix(board, 0, 0, ctx, false, true); // 灰色重畫
-  document.getElementById('gameOverMessage').style.display = 'block';
-}
-
-function restartGame() {
-  document.getElementById('gameOverMessage').style.display = 'none';
-  board = createBoard();
-  score = 0;
-  scoreEl.textContent = score;
+  currentPiece = nextPiece || createPiece(randomType());
   nextPiece = createPiece(randomType());
-  resetPiece();
+  drawPreview();
+  drawHold();
+}
+}
+
+function drawGameOver() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 36px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('💀 GAME OVER 💀', canvas.width / 2, canvas.height / 2 + 12);
 }
 
 function randomType() {
@@ -279,6 +276,9 @@ function randomType() {
 }
 
 function update(time = 0) {
+  
+  if (isGameOver) return;
+
   const deltaTime = time - lastTime;
   lastTime = time;
   dropInterval = 1000;
@@ -333,6 +333,17 @@ socket.on('opponentMove', move => {
 
 window.addEventListener('keydown', e => {
   if (!currentPiece) return;
+
+  if (isGameOver) {
+    if (e.key) {
+      isGameOver = false;
+      resetPiece();
+      update();
+      startSinglePlayer();
+    }
+    return;
+  }
+
   switch (e.key) {
     case 'ArrowLeft':
       keyState.left = true;
