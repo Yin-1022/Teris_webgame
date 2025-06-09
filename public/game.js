@@ -14,7 +14,8 @@ let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
 
-const PIECES = {
+const PIECES = 
+{
   I: [[1, 1, 1, 1]],
   O: [[1, 1], [1, 1]],
   T: [[0, 1, 0], [1, 1, 1]],
@@ -24,7 +25,8 @@ const PIECES = {
   L: [[0, 0, 1], [1, 1, 1]]
 };
 
-function createPiece(type) {
+function createPiece(type) 
+{
   return {
     shape: PIECES[type],
     x: 3,
@@ -32,7 +34,8 @@ function createPiece(type) {
   };
 }
 
-function createBoard() {
+function createBoard() 
+{
   const matrix = [];
   for (let r = 0; r < ROWS; r++) {
     matrix.push(new Array(COLS).fill(0));
@@ -85,7 +88,8 @@ function collide() {
   return false;
 }
 
-function drop() {
+function drop() 
+{
   currentPiece.y++;
   if (collide()) {
     currentPiece.y--;
@@ -96,14 +100,35 @@ function drop() {
   dropCounter = 0;
 }
 
-function clearLines() {
+function clearLines() 
+{
   board = board.filter(row => row.some(cell => cell === 0));
   while (board.length < ROWS) {
     board.unshift(new Array(COLS).fill(0));
   }
 }
 
-function resetPiece() {
+function rotate(matrix) {
+  const N = matrix.length;
+  const result = [];
+  for (let y = 0; y < N; ++y) {
+    result.push([]);
+    for (let x = 0; x < N; ++x) {
+      result[y][x] = matrix[N - x - 1][y];
+    }
+  }
+  return result;
+}
+
+function move(dir) {
+  currentPiece.x += dir;
+  if (collide()) {
+    currentPiece.x -= dir;
+  }
+}
+
+function resetPiece() 
+{
   const types = Object.keys(PIECES);
   const rand = types[Math.floor(Math.random() * types.length)];
   currentPiece = createPiece(rand);
@@ -124,7 +149,8 @@ function update(time = 0) {
   requestAnimationFrame(update);
 }
 
-function startSinglePlayer() {
+function startSinglePlayer() 
+{
   menu.style.display = 'none';
   canvas.style.display = 'block';
   board = createBoard();
@@ -133,7 +159,8 @@ function startSinglePlayer() {
   console.log('🎮 單人遊戲開始');
 }
 
-function startMultiplayer() {
+function startMultiplayer() 
+{
   menu.style.display = 'none';
   canvas.style.display = 'block';
   console.log('🌐 多人遊戲開始，等待配對...');
@@ -146,4 +173,28 @@ socket.on('matchFound', data => {
 
 socket.on('opponentMove', move => {
   console.log('📩 Received opponent move:', move);
+});
+
+window.addEventListener('keydown', e => {
+  if (!currentPiece) return;
+  switch (e.key) {
+    case 'ArrowLeft':
+      move(-1);
+      break;
+    case 'ArrowRight':
+      move(1);
+      break;
+    case 'ArrowDown':
+      drop();
+      break;
+    case 'ArrowUp': {
+      const rotated = rotate(currentPiece.shape);
+      const original = currentPiece.shape;
+      currentPiece.shape = rotated;
+      if (collide()) {
+        currentPiece.shape = original; // revert if invalid
+      }
+      break;
+    }
+  }
 });
