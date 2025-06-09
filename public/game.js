@@ -220,22 +220,27 @@ function collide() {
   return collideAt(currentPiece);
 }
 
-function drop(deltaTime = 0) {
-  currentPiece.y++;
-  if (collide()) {
-    currentPiece.y--;
+function drop(deltaTime = 0, manual = false) {
+  if (!manual) {
+    currentPiece.y++;
+    if (collide()) {
+      currentPiece.y--;
+    }
+  }
 
+  if (collide()) {
     if (!isTouchingGround) {
       isTouchingGround = true;
       lockTimer = 0;
     } else {
       lockTimer += deltaTime;
-      if (lockTimer > lockDelay) {
+      if (lockTimer > lockDelay || (isTouchingGround && groundRotationCount >= maxGroundRotations)) {
         mergePiece();
         clearLines();
         resetPiece();
         isTouchingGround = false;
         lockTimer = 0;
+        groundRotationCount = 0;
       }
     }
   } else {
@@ -395,6 +400,11 @@ function update(time = 0) {
     drop(deltaTime);
     moveTimer.down = time;
   }
+
+  if (isTouchingGround) {
+    drop(deltaTime, true);
+  }
+
   draw();
   requestAnimationFrame(update);
 }
