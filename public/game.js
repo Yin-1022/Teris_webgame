@@ -320,10 +320,28 @@ window.addEventListener('keydown', e => {
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
+      const originalY = currentPiece.y;
       const original = currentPiece.shape;
       currentPiece.shape = rotated;
+
       if (collide()) {
-        currentPiece.shape = original;
+        // 嘗試向下偏移 1～2 格看看能不能避免碰撞
+        let rotatedSuccessfully = false;
+        for (let dy = 1; dy <= 2; dy++) {
+          currentPiece.y = originalY + dy;
+          if (!collide()) {
+            rotatedSuccessfully = true;
+            break;
+          }
+        }
+
+        // 如果無法成功，就還原
+        if (!rotatedSuccessfully) {
+          currentPiece.shape = original;
+          currentPiece.y = originalY;
+        }
+      } else {
+        currentPiece.y = originalY;
       }
       break;
     }
