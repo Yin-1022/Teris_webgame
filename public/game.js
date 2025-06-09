@@ -267,6 +267,10 @@ function rotate(matrix) {
   return result;
 }
 
+function rotateCounterClockwise(matrix) {
+  return matrix[0].map((_, i) => matrix.map(row => row[i])).reverse();
+}
+
 function move(dir) {
   currentPiece.x += dir;
   if (collide()) {
@@ -394,6 +398,40 @@ window.addEventListener('keydown', e => {
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
+      const originalShape = currentPiece.shape;
+      const originalX = currentPiece.x;
+      const originalY = currentPiece.y;
+
+      const offsets = [
+        [0, 0],
+        [-1, 0], [1, 0],
+        [-2, 0], [2, 0],
+        [0, 1], [0, 2]
+      ];
+
+      let rotatedSuccessfully = false;
+
+      for (const [dx, dy] of offsets) {
+        currentPiece.shape = rotated;
+        currentPiece.x = originalX + dx;
+        currentPiece.y = originalY + dy;
+
+        if (!collide()) {
+          rotatedSuccessfully = true;
+          break;
+        }
+      }
+
+      if (!rotatedSuccessfully) {
+        currentPiece.shape = originalShape;
+        currentPiece.x = originalX;
+        currentPiece.y = originalY;
+      }
+
+      break;
+    }
+    case 'z': {
+      const rotated = rotateCounterClockwise(currentPiece.shape);
       const originalShape = currentPiece.shape;
       const originalX = currentPiece.x;
       const originalY = currentPiece.y;
