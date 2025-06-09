@@ -394,28 +394,28 @@ window.addEventListener('keydown', e => {
       break;
     case 'ArrowUp': {
       const rotated = rotate(currentPiece.shape);
-      const originalY = currentPiece.y;
       const original = currentPiece.shape;
+      const originalX = currentPiece.x;
+      const originalY = currentPiece.y;
+      const offsets = [0, -1, 1, -2, 2]; // 嘗試左右偏移
+
       currentPiece.shape = rotated;
 
-      if (collide()) {
-        // 嘗試向下偏移 1～2 格看看能不能避免碰撞
-        let rotatedSuccessfully = false;
-        for (let dy = 1; dy <= 2; dy++) {
-          currentPiece.y = originalY + dy;
-          if (!collide()) {
-            rotatedSuccessfully = true;
-            break;
-          }
+      let rotatedSuccessfully = false;
+      for (let dx of offsets) {
+        currentPiece.x = originalX + dx;
+        if (!collide()) {
+          rotatedSuccessfully = true;
+          break;
         }
+      }
 
-        // 如果無法成功，就還原
-        if (!rotatedSuccessfully) {
-          currentPiece.shape = original;
-          currentPiece.y = originalY;
-        }
-      } else {
+      if (!rotatedSuccessfully) {
+        currentPiece.shape = original;
+        currentPiece.x = originalX;
         currentPiece.y = originalY;
+      } else {
+        currentPiece.y = originalY; // 保持原來的 y 值
       }
       break;
     }
