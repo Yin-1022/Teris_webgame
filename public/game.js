@@ -41,12 +41,10 @@ const COLORS = {
 };
 
 function createPiece(type) {
-  const shape = PIECES[type].map(row => row.map(cell => (cell ? type : 0)));
   return {
-    shape,
+    shape: PIECES[type],
     x: 3,
-    y: 0,
-    type
+    y: 0
   };
 }
 
@@ -63,7 +61,7 @@ function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        context.fillStyle = COLORS[type] || 'cyan';
+        context.fillStyle = 'cyan';
         context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         context.strokeStyle = '#222';
         context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
@@ -79,7 +77,7 @@ function drawGhostPiece() {
     ghost.y++;
   }
   ghost.y--;
-  drawMatrix(ghost.shape, ghost.x, ghost.y, ctx, true, ghost.type);
+  drawMatrix(ghost.shape, ghost.x, ghost.y, ctx, true);
 }
 
 function collideAt(piece) {
@@ -102,12 +100,12 @@ function draw() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   drawMatrix(board, 0, 0);
   drawGhostPiece();
-  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y, ctx, false, currentPiece.type);
+  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
 }
 
 function drawPreview() {
   previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-  drawMatrix(nextPiece.shape, 1, 1, previewCtx, false, nextPiece.type);
+  drawMatrix(nextPiece.shape, 1, 1, previewCtx);
 }
 
 function mergePiece() {
