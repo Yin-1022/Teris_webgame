@@ -366,6 +366,22 @@ function startMultiplayer() {
   console.log('🌐 多人遊戲開始，等待配對...');
 }
 
+function returnToMenu() {
+  isGameOver = false;
+  currentPiece = null;
+  board = [];
+  holdPiece = null;
+  holdUsed = false;
+  score = 0;
+  room = null;
+
+  canvas.style.display = 'none';
+  scoreBoard.style.display = 'none';
+  menu.style.display = 'block';
+
+  console.log('↩️ 返回主選單');
+}
+
 socket.on('matchFound', data => {
   room = data.room;
   console.log('✅ Match found! Joined room:', room);
@@ -376,6 +392,11 @@ socket.on('opponentMove', move => {
 });
 
 window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    returnToMenu();
+    return;
+  }
+
   if (!currentPiece) return;
 
   if (isGameOver) {
