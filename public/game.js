@@ -7,7 +7,6 @@ const previewCanvas = document.getElementById('previewCanvas');
 const previewCtx = previewCanvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 const scoreBoard = document.getElementById('scoreBoard');
-const gameContainer = document.getElementById('gameContainer');
 const menu = document.getElementById('menu');
 
 const COLS = 10;
@@ -22,7 +21,7 @@ let lastTime = 0;
 let score = 0;
 
 const PIECES = {
-  I: [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]],
+  I: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1]],
   O: [[1, 1], [1, 1]],
   T: [[0, 0, 0], [0, 1, 0], [1, 1, 1]],
   S: [[0, 0, 0], [0, 1, 1], [1, 1, 0]],
@@ -45,7 +44,7 @@ function createPiece(type) {
   return {
     shape: PIECES[type],
     x: 3,
-    y: 0,
+    y: 0
   };
 }
 
@@ -199,7 +198,8 @@ function update(time = 0) {
 
 function startSinglePlayer() {
   menu.style.display = 'none';
-  gameContainer.style.display = 'flex';
+  canvas.style.display = 'block';
+  scoreBoard.style.display = 'block';
   board = createBoard();
   score = 0;
   scoreEl.textContent = score;
