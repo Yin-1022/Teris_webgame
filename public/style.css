@@ -37,9 +37,3 @@ button:hover {
   gap: 20px;
   margin-top: 20px;
 }
-
-#mainGame {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-}
