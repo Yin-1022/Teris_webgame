@@ -270,11 +270,23 @@ function resetPiece() {
   // }
 
   if (collide()) {
-    board = createBoard();
-    score = 0;
-    scoreEl.textContent = score;
-    dropInterval = 1000;
-    alert('💀 Game Over');
+    // 把它合併進場地（就算是在上方隱藏區）
+    mergePiece();
+    draw(); // 立即繪製，顯示最終畫面
+
+    // 如果這個方塊佔用了第 0 行，就 Game Over
+    if (currentPiece.y < 1 || pieceHitsTop(currentPiece)) {
+      alert('💀 Game Over');
+      board = createBoard();
+      score = 0;
+      scoreEl.textContent = score;
+    }
+
+    // 再次產生下一個方塊
+    currentPiece = nextPiece || createPiece(randomType());
+    nextPiece = createPiece(randomType());
+    drawPreview();
+    drawHold();
   }
 }
 
@@ -286,6 +298,7 @@ function randomType() {
 function update(time = 0) {
   const deltaTime = time - lastTime;
   lastTime = time;
+  dropInterval = 1000;
   dropCounter += deltaTime;
   if (dropCounter > dropInterval) {
     drop();
