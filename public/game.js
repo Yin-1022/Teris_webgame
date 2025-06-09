@@ -3,6 +3,10 @@ const socket = io();
 let room = null;
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const previewCanvas = document.getElementById('previewCanvas');
+const previewCtx = previewCanvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const scoreBoard = document.getElementById('scoreBoard');
 const menu = document.getElementById('menu');
 
 const COLS = 10;
@@ -10,12 +14,13 @@ const ROWS = 20;
 const BLOCK_SIZE = 30;
 let board = [];
 let currentPiece;
+let nextPiece;
 let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
+let score = 0;
 
-const PIECES = 
-{
+const PIECES = {
   I: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1]],
   O: [[1, 1], [1, 1]],
   T: [[0, 0, 0], [0, 1, 0], [1, 1, 1]],
@@ -25,8 +30,7 @@ const PIECES =
   L: [[0, 0, 0], [0, 0, 1], [1, 1, 1]]
 };
 
-function createPiece(type) 
-{
+function createPiece(type) {
   return {
     shape: PIECES[type],
     x: 3,
@@ -34,8 +38,7 @@ function createPiece(type)
   };
 }
 
-function createBoard() 
-{
+function createBoard() {
   const matrix = [];
   for (let r = 0; r < ROWS; r++) {
     matrix.push(new Array(COLS).fill(0));
@@ -43,38 +46,32 @@ function createBoard()
   return matrix;
 }
 
-function drawMatrix(matrix, offsetX, offsetY) {
+function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
+  context.globalAlpha = ghost ? 0.3 : 1;
   matrix.forEach((row, y) => {
     row.forEach((value, x) => {
       if (value) {
-        ctx.fillStyle = 'cyan';
-        ctx.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-        ctx.strokeStyle = '#222';
-        ctx.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        context.fillStyle = 'cyan';
+        context.fillRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        context.strokeStyle = '#222';
+        context.strokeRect((x + offsetX) * BLOCK_SIZE, (y + offsetY) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
       }
     });
   });
+  context.globalAlpha = 1;
 }
 
-function draw() {
-  ctx.fillStyle = '#000';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawMatrix(board, 0, 0);
-  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
+function drawGhostPiece() {
+  const ghost = { ...currentPiece, y: currentPiece.y };
+  while (!collideAt(ghost)) {
+    ghost.y++;
+  }
+  ghost.y--;
+  drawMatrix(ghost.shape, ghost.x, ghost.y, ctx, true);
 }
 
-function mergePiece() {
-  currentPiece.shape.forEach((row, y) => {
-    row.forEach((value, x) => {
-      if (value) {
-        board[currentPiece.y + y][currentPiece.x + x] = value;
-      }
-    });
-  });
-}
-
-function collide() {
-  const { shape, x: px, y: py } = currentPiece;
+function collideAt(piece) {
+  const { shape, x: px, y: py } = piece;
   for (let y = 0; y < shape.length; y++) {
     for (let x = 0; x < shape[y].length; x++) {
       if (
@@ -88,28 +85,61 @@ function collide() {
   return false;
 }
 
-function drop() 
-{
+function draw() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawMatrix(board, 0, 0);
+  drawGhostPiece();
+  drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
+}
+
+function drawPreview() {
+  previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+  drawMatrix(nextPiece.shape, 1, 1, previewCtx);
+}
+
+function mergePiece() {
+  currentPiece.shape.forEach((row, y) => {
+    row.forEach((value, x) => {
+      if (value) {
+        board[currentPiece.y + y][currentPiece.x + x] = value;
+      }
+    });
+  });
+}
+
+function collide() {
+  return collideAt(currentPiece);
+}
+
+function drop() {
   currentPiece.y++;
   if (collide()) {
     currentPiece.y--;
     mergePiece();
-    resetPiece();
     clearLines();
+    resetPiece();
   }
   dropCounter = 0;
 }
 
-function clearLines() 
-{
-  board = board.filter(row => row.some(cell => cell === 0));
+function clearLines() {
+  let linesCleared = 0;
+  board = board.filter(row => {
+    if (row.every(cell => cell !== 0)) {
+      linesCleared++;
+      return false;
+    }
+    return true;
+  });
   while (board.length < ROWS) {
     board.unshift(new Array(COLS).fill(0));
   }
+  score += linesCleared * 100;
+  scoreEl.textContent = score;
 }
 
-function rotate(matrix) 
-{
+function rotate(matrix) {
   const N = matrix.length;
   const result = [];
   for (let y = 0; y < N; ++y) {
@@ -128,15 +158,21 @@ function move(dir) {
   }
 }
 
-function resetPiece() 
-{
-  const types = Object.keys(PIECES);
-  const rand = types[Math.floor(Math.random() * types.length)];
-  currentPiece = createPiece(rand);
+function resetPiece() {
+  currentPiece = nextPiece || createPiece(randomType());
+  nextPiece = createPiece(randomType());
+  drawPreview();
   if (collide()) {
     board = createBoard();
+    score = 0;
+    scoreEl.textContent = score;
     alert('💀 Game Over');
   }
+}
+
+function randomType() {
+  const types = Object.keys(PIECES);
+  return types[Math.floor(Math.random() * types.length)];
 }
 
 function update(time = 0) {
@@ -150,20 +186,23 @@ function update(time = 0) {
   requestAnimationFrame(update);
 }
 
-function startSinglePlayer() 
-{
+function startSinglePlayer() {
   menu.style.display = 'none';
   canvas.style.display = 'block';
+  scoreBoard.style.display = 'block';
   board = createBoard();
+  score = 0;
+  scoreEl.textContent = score;
+  nextPiece = createPiece(randomType());
   resetPiece();
   update();
   console.log('🎮 單人遊戲開始');
 }
 
-function startMultiplayer() 
-{
+function startMultiplayer() {
   menu.style.display = 'none';
   canvas.style.display = 'block';
+  scoreBoard.style.display = 'none';
   console.log('🌐 多人遊戲開始，等待配對...');
 }
 

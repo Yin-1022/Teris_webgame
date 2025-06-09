@@ -24,3 +24,7 @@ button {
 button:hover {
   background: #666;
 }
+
+#scoreBoard {
+  margin-top: 20px;
+}

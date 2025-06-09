@@ -17,7 +17,6 @@ io.on('connection', socket => {
   console.log('🔌 New client connected:', socket.id);
 
   if (waitingPlayer) {
-    // 配對成功
     const room = `room-${waitingPlayer.id}-${socket.id}`;
     socket.join(room);
     waitingPlayer.join(room);
@@ -27,7 +26,6 @@ io.on('connection', socket => {
 
     waitingPlayer = null;
   } else {
-    // 暫存等待配對玩家
     waitingPlayer = socket;
   }
 
