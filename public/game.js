@@ -263,10 +263,7 @@ function resetPiece() {
 function drawGameOver() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
   ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 25px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('💀 GAME OVER 💀', canvas.width / 1.5, canvas.height / 2 + 12);
+  ctx.fillText('💀 GAME OVER 💀', canvas.width / 1.8, canvas.height / 2 + 12);
 }
 
 function randomType() {
