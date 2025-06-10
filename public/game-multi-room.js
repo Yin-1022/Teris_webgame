@@ -6,6 +6,8 @@ let playerName3 = '';
 let playerName4 = '';
 let roomPassword = '';
 
+let isRoomHost = false;
+
 function generateRoomPassword() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let password = '';
@@ -42,6 +44,8 @@ function closeDialog(id) {
 }
 
 function confirmCreate() {
+  isRoomHost = true;
+  
   const name = document.getElementById('createName').value.trim();
   if (name === '') {
     alert('請輸入名字');
@@ -58,6 +62,8 @@ function confirmCreate() {
 
   // 顯示房間頁面內容 (內嵌 room.html 結構)
   document.getElementById('roomWrapper').style.display = 'block';
+
+  document.getElementById('startButton').style.display = isRoomHost ? 'block' : 'none';
 
   const playerList = document.getElementById('players');
   if (playerList && playerList.children.length > 0) {
@@ -88,6 +94,7 @@ function confirmJoin() {
   socket.on('roomJoined', ({ password, players }) => {
     document.getElementById('menu').style.display = 'none';
     document.getElementById('roomWrapper').style.display = 'block';
+    document.getElementById('startButton').style.display = isRoomHost ? 'block' : 'none';
 
     const passwordLabel = document.getElementById('roomPassword');
     if (passwordLabel) passwordLabel.textContent = password;
@@ -114,6 +121,11 @@ function sendChat() {
     socket.emit('chatMessage', { name: playerName1, text: msg });
     input.value = '';
   }
+}
+
+function startGame() {
+  if (!isRoomHost) return;
+  socket.emit('startGame', roomPassword);
 }
 
 function appendSystemMessage(text) {
@@ -176,8 +188,16 @@ socket.on('chatMessage', ({ name, text }) => {
 socket.on('updatePlayerList', (players) => {
   const playerList = document.getElementById('players');
   for (let i = 0; i < playerList.children.length; i++) {
-    playerList.children[i].textContent = players[i]?.name || `玩家${i+1}`;
+    playerList.children[i].textContent = players[i]?.name || `---`;
   }
+});
+
+socket.on('gameStarted', () => {
+  document.getElementById('roomWrapper').style.display = 'none';
+  document.getElementById('gameCanvas').style.display = 'block';
+
+  // 可依需求顯示 multiplayer scoreboard
+  startMultiplayerGame(); // 你會在 game-multi-itself.js 中實作這個
 });
 
 document.addEventListener('DOMContentLoaded', () => {

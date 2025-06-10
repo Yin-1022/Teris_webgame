@@ -62,6 +62,10 @@ io.on('connection', socket => {
     }
   });
 
+  socket.on('startGame', (password) => {
+    io.to(password).emit('gameStarted');
+  });
+
   socket.on('disconnect', () => 
   {
     console.log('❌ Client disconnected:', socket.id);
