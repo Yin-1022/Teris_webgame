@@ -111,8 +111,24 @@ function returnToMenu() {
   document.getElementById('roomWrapper').style.display = 'none';
   menu.style.display = 'block';
 
+  // 清空聊天室內容
   const messages = document.getElementById('chatMessages');
   if (messages) messages.innerHTML = '';
+
+  // 重設玩家名單
+  const playerList = document.getElementById('players');
+  if (playerList) {
+    const defaultNames = ['玩家一', '玩家二', '玩家三', '玩家四'];
+    for (let i = 0; i < playerList.children.length; i++) {
+      playerList.children[i].textContent = defaultNames[i] || '';
+    }
+  }
+
+  // 清除房間密碼
+  const passwordLabel = document.getElementById('roomPassword');
+  if (passwordLabel) {
+    passwordLabel.textContent = '------';
+  }
 
   console.log('↩️ 返回主選單');
 }
