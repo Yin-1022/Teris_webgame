@@ -16,10 +16,20 @@ function startMultiplayerGame() {
 }
 
 const otherPlayers = {};
+let winnerDeclared = false;
 
 socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
   otherPlayers[id] = { name, board, currentPiece, isGameOver };
   renderOtherPlayers();
+
+  const alivePlayers = Object.entries(otherPlayers).filter(([_, p]) => !p.isGameOver);
+  if (!isGameOver && alivePlayers.length === 0 && !winnerDeclared) {
+    winnerDeclared = true;
+    isGameOver = true;
+    drawWin();
+    freezeGame();
+  }
+
 });
 
 function renderOtherPlayers() {
@@ -58,6 +68,21 @@ function renderOtherPlayers() {
   }
 }
 
+function drawWin() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
+  ctx.fillStyle = '#0f0';
+  ctx.font = 'bold 20px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('🏆 WINNER 🏆', canvas.width / 2, canvas.height / 2 + 10);
+}
+
+function freezeGame() {
+  // 阻止更新動畫
+  isGameOver = true;
+}
+
+
 function returnToMenu() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
@@ -68,22 +93,9 @@ function returnToMenu() {
 function returnToRoom() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
-  document.getElementById('roomWrapper').style.display = 'block';
+  menu.style.display = 'block';
   document.getElementById('multiplayerViews').style.display = 'none';
 }
-
-socket.on('showGameEndOptions', (winnerName) => {
-  if (!isRoomHost) return;
-
-  const confirmed = confirm(`${winnerName} 獲勝！\n\n是否要重新一局？\n\n按「取消」則回到房間。`);
-  if (confirmed) 
-  {
-    socket.emit('startGame', roomPassword); // 重新發送 startGame
-  } 
-  else {
-    returnToRoom();
-  }
-});
 
 window.addEventListener('beforeunload', () => {
   socket.emit('syncState', {
@@ -98,6 +110,16 @@ window.addEventListener('beforeunload', () => {
 });
 
 window.addEventListener('keydown', e => {
+
+  if (winnerDeclared && isRoomHost) {
+    if (e.key === ' ') {
+      socket.emit('startGame', roomPassword);
+    }
+    if (e.key === 'Escape') {
+      returnToRoom();
+    }
+  }
+
   if (e.key === 'Escape') {
     const confirmed = confirm('確定要離開房間嗎？');
     if (confirmed) {
@@ -110,7 +132,7 @@ window.addEventListener('keydown', e => {
       setTimeout(() => {
         socket.disconnect();
         }, 200);
-      returnToMenu();
+      returnToRoom();
     }
     return;
   }

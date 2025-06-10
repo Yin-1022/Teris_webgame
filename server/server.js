@@ -73,13 +73,6 @@ io.on('connection', socket => {
         if (players.find(p => p.id === socket.id)) {
           socket.to(pwd).emit('syncState', { ...data, id: socket.id });
           
-          const alivePlayers = players.filter(p => !lastKnownState[p.id]?.isGameOver);
-          if (alivePlayers.length === 1) {
-            // 通知房主
-            const hostId = players[0].id;
-            io.to(hostId).emit('showGameEndOptions', alivePlayers[0].name);
-          }
-
           break;
         }
       }
