@@ -1,37 +1,23 @@
-const multiplayerBtn = document.getElementById('multiplayerBtn');
-const multiplayerOptions = document.getElementById('multiplayerOptions');
+const multiBtn = document.getElementById('multiBtn');
+const multiOptions = document.getElementById('multiOptions');
+const createRoomBtn = document.getElementById('createRoomBtn');
+const joinRoomBtn = document.getElementById('joinRoomBtn');
+const roomCodeDisplay = document.getElementById('roomCodeDisplay');
 
-multiplayerBtn.addEventListener('click', () => {
-  // 清空先前選項
-  multiplayerOptions.innerHTML = '';
-
-  // 建立「加入房間」按鈕
-  const joinRoomBtn = document.createElement('button');
-  joinRoomBtn.textContent = '加入房間';
-  joinRoomBtn.onclick = () => {
-    alert('加入房間功能尚未實作');
-  };
-
-  // 建立「建立新房間」按鈕
-  const createRoomBtn = document.createElement('button');
-  createRoomBtn.textContent = '建立新房間';
-  createRoomBtn.style.marginLeft = '10px';
-  createRoomBtn.onclick = () => {
-    const roomCode = generateRoomCode(6);
-    alert(`成功建立房間，房間代碼：${roomCode}`);
-    // 假設用URL跳轉到房間頁面，例如：
-    window.location.href = `/room/${roomCode}`;
-  };
-
-  multiplayerOptions.appendChild(joinRoomBtn);
-  multiplayerOptions.appendChild(createRoomBtn);
+multiBtn.addEventListener('click', () => {
+  multiOptions.style.display = 'block';
 });
 
-// 產生隨機6位英數字房間代碼
-function generateRoomCode(length) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+createRoomBtn.addEventListener('click', () => {
+  const roomCode = generateRoomCode();
+  roomCodeDisplay.textContent = `房間代碼：${roomCode}`;
+  // 在這裡與伺服器連線後 emit: socket.emit('createRoom', roomCode);
+});
+
+function generateRoomCode(length = 6) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let code = '';
-  for(let i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;

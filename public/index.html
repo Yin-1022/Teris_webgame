@@ -12,9 +12,13 @@
   <div id="menu">
     <button onclick="startSinglePlayer()">單人遊戲</button>
     <button id="multiBtn">多人遊戲</button>
-    <button id="multiplayerBtn">多人遊戲</button>
 
-    <div id="multiplayerOptions" style="margin-top: 10px;"></div>
+    <!-- 新增多人子選單 -->
+    <div id="multiOptions" style="display: none; margin-top: 10px;">
+      <button id="createRoomBtn">建立新房間</button>
+      <button id="joinRoomBtn">加入房間</button>
+      <div id="roomCodeDisplay" style="margin-top: 8px; font-weight: bold;"></div>
+    </div>
   </div>
 
   <div id="gameContainer">
