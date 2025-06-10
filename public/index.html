@@ -27,7 +27,7 @@
     <div class="dialog-content">
       <span class="close" onclick="closeDialog('joinDialog')">&times;</span>
       <h3>加入遊戲</h3>
-      <input type="text" id="joinName" placeholder="請輸入你的名字" />
+      <input type="text" id="joinName" placeholder="請輸入房間密碼" />
       <button onclick="confirmJoin()">確認加入</button>
     </div>
   </div>
@@ -37,8 +37,37 @@
     <div class="dialog-content">
       <span class="close" onclick="closeDialog('createDialog')">&times;</span>
       <h3>建立遊戲</h3>
-      <input type="text" id="createPassword" placeholder="請輸入房間密碼" />
+      <input type="text" id="createPassword" placeholder="請輸入你的名字" />
       <button onclick="confirmCreate()">確認建立</button>
+    </div>
+  </div>
+
+  <div id="roomWrapper" style="display:none">
+    <h1>🎮 等待玩家加入...</h1>
+    <div id="roomContainer">
+      <div id="chatBox">
+        <div id="chatMessages"></div>
+        <div id="chatInputContainer">
+          <input type="text" id="chatInput" placeholder="輸入訊息..." />
+          <button onclick="sendChat()">送出</button>
+        </div>
+      </div>
+
+      <div id="playerList">
+        <h3>玩家列表</h3>
+        <ul id="players">
+          <li>玩家一</li>
+          <li>玩家二</li>
+          <li>玩家三</li>
+          <li>玩家四</li>
+        </ul>
+        <button id="startButton" onclick="startGame()">開始遊戲</button>
+      </div>
+
+      <div id="roomInfo">
+        <h3>房間資訊</h3>
+        <p>密碼: <span id="roomPassword">AB12XX</span></p>
+      </div>
     </div>
   </div>
 

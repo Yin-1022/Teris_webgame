@@ -24,26 +24,30 @@ function closeDialog(id) {
   document.getElementById(id).style.display = 'none';
 }
 
-function confirmCreate() 
-{
-  const name = document.getElementById('joinName').value.trim();
-  if (name === '') {
-    alert('請輸入名字');
-    return;
-  }
-  closeDialog('createDialog');
-  console.log('✅ 建立房間，名稱：', name);
-  window.location.href = 'room.html';
-}
-
-function confirmJoin() {
+function confirmCreate() {
   const password = document.getElementById('createPassword').value.trim();
   if (password === '') {
     alert('請輸入密碼');
     return;
   }
+  closeDialog('createDialog');
+  console.log('✅ 建立房間，密碼：', password);
+
+  // 隱藏主選單區域
+  document.getElementById('mainMenu').style.display = 'none';
+
+  // 顯示房間頁面內容 (內嵌 room.html 結構)
+  document.getElementById('roomWrapper').style.display = 'block';
+}
+
+function confirmJoin() {
+  const name = document.getElementById('joinName').value.trim();
+  if (name === '') {
+    alert('請輸入名字');
+    return;
+  }
   closeDialog('joinDialog');
-  console.log('✅ 加入遊戲，密碼：', password);
+  console.log('✅ 加入遊戲，名稱：', name);
   // 你可以在這裡進行 socket emit 或其他動作
 }
 
