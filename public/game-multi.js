@@ -66,3 +66,19 @@ function sendChat() {
 function startGame() {
   alert('開始遊戲！(尚未實作連線邏輯)');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('chatInput');
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      sendChat();
+    }
+  });
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    returnToMenu();
+    return;
+  }
+});  
