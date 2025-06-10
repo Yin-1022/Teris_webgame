@@ -48,6 +48,8 @@ function confirmCreate() {
   if (playerList && playerList.children.length > 0) {
     playerList.children[0].textContent = playerName1;
   }
+
+  appendSystemMessage(`${playerName1} 已進入房間`);
 }
 
 function confirmJoin() {
@@ -66,10 +68,21 @@ function sendChat() {
   if (msg) {
     const messages = document.getElementById('chatMessages');
     const div = document.createElement('div');
-    div.textContent = msg;
+    div.textContent = `${playerName1}: ${msg}`;
     messages.appendChild(div);
     input.value = '';
+    messages.scrollTop = messages.scrollHeight;
   }
+}
+
+function appendSystemMessage(text) {
+  const messages = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.textContent = text;
+  div.style.fontStyle = 'italic';
+  div.style.opacity = '0.8';
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 }
 
 function startGame() {

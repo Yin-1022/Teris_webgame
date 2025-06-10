@@ -114,10 +114,13 @@ button:hover {
       flex-direction: column;
   }
   #chatMessages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-      border-bottom: 1px solid #fff;
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 1px solid #fff;
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 1.4em;
   }
   #chatInputContainer {
     display: flex;
