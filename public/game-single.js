@@ -152,25 +152,6 @@ function draw() {
     drawGhostPiece();
     drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
   }
-
-  if (comboMessageTimer > 0 && comboMessage) {
-    ctx.font = 'bold 24px Arial';
-    ctx.fillStyle = 'yellow';
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 3;
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'black';
-    ctx.shadowBlur = 4;
-
-    const x = canvas.width / 2;
-    const y = canvas.height + 30;  // canvas正下方30px位置（canvas高度600底下）
-
-    ctx.strokeText(comboMessage, x, y);
-    ctx.fillText(comboMessage, x, y);
-
-    // 倒數計時
-    comboMessageTimer -= 16;  // 約每幀減16毫秒，搭配requestAnimationFrame速度
-  }
 }
 
 function drawPreview() {
@@ -194,6 +175,24 @@ function drawHold() {
     } else {
       drawMatrix(holdPiece.shape, 1, 1, holdCtx);
     }
+  }
+
+  if (comboMessageTimer > 0 && comboMessage) {
+    holdCtx.font = 'bold 16px Arial';
+    holdCtx.fillStyle = 'yellow';
+    holdCtx.strokeStyle = 'black';
+    holdCtx.lineWidth = 2;
+    holdCtx.textAlign = 'center';
+    holdCtx.shadowColor = 'black';
+    holdCtx.shadowBlur = 3;
+
+    const x = (5 * blockSize) / 2;   // 水平中間
+    const y = 5 * blockSize + 20;    // holdCanvas 4格下面 20px
+    
+    holdCtx.strokeText(comboMessage, x, y);
+    holdCtx.fillText(comboMessage, x, y);
+
+    comboMessageTimer -= 16;
   }
 }
 
@@ -298,6 +297,8 @@ function clearLines() {
       comboMessage = '🔥 TETRIS! 🔥';
     } else if (combo > 1) {
       comboMessage = `COMBO x${combo}!`;
+      score += combo * 50; // 每次combo額外加分
+      scoreEl.textContent = score;
     } else {
       comboMessage = '';
     }
