@@ -31,6 +31,11 @@ io.on('connection', socket => {
       return;
     }
 
+    if (rooms[password].length >= 4) {
+      socket.emit('errorMessage', '房間已滿，最多4人');
+      return;
+    }
+
     socket.join(password);
     rooms[password].push({ id: socket.id, name });
     socket.emit('roomJoined', { password, players: rooms[password] });
@@ -38,7 +43,16 @@ io.on('connection', socket => {
     console.log(`✅ 玩家 ${name} 加入房間 ${password}`);
   });
 
-  socket.on('disconnect', () => {
+  socket.on('checkRoom', (password) => {
+    if (rooms[password]) {
+      socket.emit('roomExists');
+    } else {
+      socket.emit('errorMessage', '房間不存在');
+    }
+  });
+
+  socket.on('disconnect', () => 
+  {
     console.log('❌ Client disconnected:', socket.id);
     for (const [pwd, players] of Object.entries(rooms)) {
       const idx = players.findIndex(p => p.id === socket.id);

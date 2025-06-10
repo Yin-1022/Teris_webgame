@@ -165,6 +165,10 @@ function returnToMenu() {
   console.log('↩️ 返回主選單');
 }
 
+socket.on('playerLeft', ({ name }) => {
+  appendSystemMessage(`${name} 已離開房間`);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('chatInput');
   input.addEventListener('keydown', (e) => {
@@ -180,3 +184,7 @@ window.addEventListener('keydown', e => {
     return;
   }
 });  
+
+window.addEventListener('beforeunload', () => {
+  socket.disconnect(); // 通知後端處理離開
+});
