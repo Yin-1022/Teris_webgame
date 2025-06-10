@@ -17,8 +17,8 @@ function startMultiplayerGame() {
 
 const otherPlayers = {};
 
-socket.on('syncState', ({ id, name, board, currentPiece }) => {
-  otherPlayers[id] = { name, board, currentPiece };
+socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
+  otherPlayers[id] = { name, board, currentPiece, isGameOver };
   renderOtherPlayers();
 });
 
