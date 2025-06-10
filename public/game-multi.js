@@ -102,10 +102,6 @@ function confirmJoin() {
     appendSystemMessage(`${playerName1} 已進入房間`);
   });
 
-    socket.on('playerJoined', ({ name }) => {
-    appendSystemMessage(`${name} 已進入房間`);
-  });
-
   socket.on('errorMessage', msg => {
     alert(msg);
   });
@@ -146,7 +142,7 @@ function returnToMenu() {
   // 重設玩家名單
   const playerList = document.getElementById('players');
   if (playerList) {
-    const defaultNames = ['玩家一', '玩家二', '玩家三', '玩家四'];
+    const defaultNames = ['---', '---', '---', '---'];
     for (let i = 0; i < playerList.children.length; i++) {
       playerList.children[i].textContent = defaultNames[i] || '';
     }
@@ -164,6 +160,10 @@ function returnToMenu() {
 socket.on('playerLeft', ({ name }) => {
   appendSystemMessage(`${name} 已離開房間`);
 });
+
+socket.on('playerJoined', ({ name }) => {
+    appendSystemMessage(`${name} 已進入房間`);
+  });
 
 socket.on('chatMessage', ({ name, text }) => {
   const messages = document.getElementById('chatMessages');
