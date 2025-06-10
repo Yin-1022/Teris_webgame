@@ -90,6 +90,11 @@ function createBoard() {
   return matrix;
 }
 
+function updateHoldMessage(text) {
+  const holdMsgEl = document.getElementById('hold-message');
+  holdMsgEl.textContent = text || '';
+}
+
 function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
   matrix.forEach((row, y) => {
@@ -152,6 +157,7 @@ function draw() {
     drawGhostPiece();
     drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
   }
+
 }
 
 function drawPreview() {
@@ -175,24 +181,6 @@ function drawHold() {
     } else {
       drawMatrix(holdPiece.shape, 1, 1, holdCtx);
     }
-  }
-
-  if (comboMessageTimer > 0 && comboMessage) {
-    holdCtx.font = 'bold 16px Arial';
-    holdCtx.fillStyle = 'yellow';
-    holdCtx.strokeStyle = 'black';
-    holdCtx.lineWidth = 2;
-    holdCtx.textAlign = 'center';
-    holdCtx.shadowColor = 'black';
-    holdCtx.shadowBlur = 3;
-
-    const x = (5 * blockSize) / 2;   // 水平中間
-    const y = 5 * blockSize + 20;    // holdCanvas 4格下面 20px
-    
-    holdCtx.strokeText(comboMessage, x, y);
-    holdCtx.fillText(comboMessage, x, y);
-
-    comboMessageTimer -= 16;
   }
 }
 
@@ -294,18 +282,20 @@ function clearLines() {
     combo++;
     // 4行一次稱為TETRIS
     if (linesCleared === 4) {
-      comboMessage = '🔥 TETRIS! 🔥';
+      updateHoldMessage('🔥 TETRIS! 🔥');
     } else if (combo > 1) {
-      comboMessage = `COMBO x${combo}!`;
+      updateHoldMessage = `COMBO x${combo}!`;
       score += combo * 50; // 每次combo額外加分
       scoreEl.textContent = score;
     } else {
-      comboMessage = '';
+      updateHoldMessage = '';
     }
-    comboMessageTimer = comboMessageDuration;
+    clearTimeout(window.holdMsgTimeout);
+    window.holdMsgTimeout = setTimeout(() => updateHoldMessage(''), 1500);
   } else {
     // 沒消行，combo 歸零
     combo = 0;
+    updateHoldMessage('');
   }
 }
 
