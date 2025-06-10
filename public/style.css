@@ -120,18 +120,18 @@ button:hover {
       border-bottom: 1px solid #fff;
   }
   #chatInputContainer {
-     display: flex;
+    display: flex;
     height: 40px;
     border-top: 1px solid #fff;
   }
   #chatInput {
-    flex: 1;
+    flex: 8;
     padding: 5px;
     border: none;
     font-size: 1em;
   }
   #chatInputContainer button {
-    width: 60px;
+    flex: 2;
     font-size: 1em;
     border: none;
     background: #444;
@@ -152,6 +152,9 @@ button:hover {
     padding: 0;
     margin: 0;
     flex: 1;
+  }
+  #players li:first-child {
+    border-top: 1px solid #fff;
   }
   #players li {
     border-bottom: 1px solid #fff;
