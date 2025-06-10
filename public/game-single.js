@@ -288,6 +288,13 @@ function clearLines() {
     // 沒消行，combo 歸零
     combo = 0;
   }
+
+  if (typeof socket !== 'undefined' && linesCleared >= 2) {
+  socket.emit('sendGarbage', {
+    lines: linesCleared,
+    from: playerName1
+  });
+}
 }
 
 function rotate(matrix) {

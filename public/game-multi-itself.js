@@ -1,9 +1,5 @@
 function startMultiplayerGame() {
-  if (isGameOver) {
-    console.log('❌ 已 Game Over，無法重新開始遊戲');
-    return;
-  }
-
+    
   board = createBoard();
   score = 0;
   scoreEl.textContent = score;
@@ -28,6 +24,17 @@ socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
   renderOtherPlayers();
 
   const alivePlayers = Object.entries(otherPlayers).filter(([_, p]) => !p.isGameOver);
+});
+
+socket.on('receiveGarbage', (garbage) => {
+  // 移除頂部行
+  for (let i = 0; i < garbage.length; i++) {
+    board.shift();
+  }
+  // 加入垃圾行到底部
+  board.push(...garbage);
+
+  draw(); // 重新繪製
 });
 
 function renderOtherPlayers() {

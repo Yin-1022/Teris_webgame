@@ -78,6 +78,29 @@ io.on('connection', socket => {
       }
   });
 
+  socket.on('sendGarbage', ({ lines, from }) => {
+  const amount = lines === 2 ? 1 : lines === 3 ? 2 : 4;
+
+  for (const [pwd, players] of Object.entries(rooms)) {
+    if (players.find(p => p.id === socket.id)) {
+      const others = players.filter(p => p.id !== socket.id);
+      if (others.length === 0) return;
+
+      const target = others[Math.floor(Math.random() * others.length)];
+
+      // 建立固定垃圾行（有空洞）
+      const garbageRow = () => {
+        const hole = Math.floor(Math.random() * 10);
+        return Array.from({ length: 10 }, (_, i) => (i === hole ? 0 : 8));
+      };
+      const garbage = Array.from({ length: amount }, garbageRow);
+
+      io.to(target.id).emit('receiveGarbage', garbage);
+      break;
+    }
+  }
+});
+
   socket.on('disconnect', () => 
   {
     console.log('❌ Client disconnected:', socket.id);

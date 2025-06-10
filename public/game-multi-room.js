@@ -193,8 +193,6 @@ socket.on('updatePlayerList', (players) => {
 });
 
 socket.on('gameStarted', () => {
-  isGameOver = false;
-
   document.getElementById('roomWrapper').style.display = 'none';
   document.getElementById('gameCanvas').style.display = 'block';
   document.getElementById('scoreBoard').style.display = 'block';
