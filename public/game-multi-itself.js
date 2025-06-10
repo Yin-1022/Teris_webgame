@@ -9,7 +9,8 @@ function startMultiplayerGame() {
   socket.emit('syncState', {
     board,
     currentPiece,
-    name: playerName1
+    name: playerName1,
+    isGameOver: false
   });
   console.log('🎮 多人遊戲開始！');
 }
@@ -35,8 +36,13 @@ function renderOtherPlayers() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawMatrix(player.board, 0, 0, ctx, false); // 使用預設 BLOCK_SIZE
-    drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx, false);
+    if (player.isGameOver) {
+      drawMatrixGray(player.board, 0, 0, ctx);
+      drawMatrixGray(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx);
+    } else {
+      drawMatrix(player.board, 0, 0, ctx, false);
+      drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx, false);
+    }
 
     const label = document.createElement('div');
     label.style.textAlign = 'center';
@@ -51,3 +57,27 @@ function renderOtherPlayers() {
     container.appendChild(wrapper);
   }
 }
+
+window.addEventListener('beforeunload', () => {
+  socket.emit('syncState', {
+    board,
+    currentPiece,
+    name: playerName1,
+    isGameOver: true
+  });
+  socket.disconnect();
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    socket.emit('syncState', {
+      board,
+      currentPiece,
+      name: playerName1,
+      isGameOver: true
+    });
+    socket.disconnect();
+    returnToMenu();
+    return;
+  }
+});
