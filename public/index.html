@@ -18,9 +18,29 @@
         <button onclick="joinGame()">加入遊戲</button>
         <button onclick="createGame()">建立遊戲</button>
       </div>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- 加入房間對話框 -->
+  <div id="joinDialog" class="dialog">
+    <div class="dialog-content">
+      <span class="close" onclick="closeDialog('joinDialog')">&times;</span>
+      <h3>加入遊戲</h3>
+      <input type="text" id="joinName" placeholder="請輸入你的名字" />
+      <button onclick="confirmJoin()">確認加入</button>
+    </div>
+  </div>
+
+  <!-- 建立房間對話框 -->
+  <div id="createDialog" class="dialog">
+    <div class="dialog-content">
+      <span class="close" onclick="closeDialog('createDialog')">&times;</span>
+      <h3>建立遊戲</h3>
+      <input type="text" id="createPassword" placeholder="請輸入房間密碼" />
+      <button onclick="confirmCreate()">確認建立</button>
+    </div>
+  </div>
 
   <div id="gameContainer">
     <canvas id="gameCanvas" width="300" height="600" style="display: none;"></canvas>
