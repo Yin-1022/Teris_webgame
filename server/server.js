@@ -99,6 +99,7 @@ io.on('connection', socket => {
         if (players.length === 0) {
           delete rooms[pwd];
         }
+        isRoomHost = false;
         break;
       }
     }

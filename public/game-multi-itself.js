@@ -58,6 +58,38 @@ function renderOtherPlayers() {
   }
 }
 
+function checkIfOnlyOneAlive() {
+  const aliveCount = Object.values(otherPlayers).filter(p => !p.isGameOver).length + (isGameOver ? 0 : 1);
+  return aliveCount === 1;
+}
+
+function showRestartOptions() {
+  if (document.getElementById('restartOptions')) return; // 已顯示過就不再新增
+
+  const container = document.createElement('div');
+  container.id = 'restartOptions';
+  container.style.marginTop = '20px';
+
+  const restartBtn = document.createElement('button');
+  restartBtn.textContent = '再玩一次';
+  restartBtn.onclick = () => {
+    container.remove();
+    socket.emit('startGame', roomPassword); // 重新發送 startGame
+  };
+
+  const backBtn = document.createElement('button');
+  backBtn.textContent = '返回房間';
+  backBtn.onclick = () => {
+    container.remove();
+    returnToMenu();
+  };
+
+  container.appendChild(restartBtn);
+  container.appendChild(backBtn);
+
+  document.body.appendChild(container);
+}
+
 function returnToMenu() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
