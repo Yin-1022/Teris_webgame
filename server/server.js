@@ -66,6 +66,15 @@ io.on('connection', socket => {
     io.to(password).emit('gameStarted');
   });
 
+  socket.on('syncState', (data) => {
+  for (const [pwd, players] of Object.entries(rooms)) {
+      if (players.find(p => p.id === socket.id)) {
+        socket.to(pwd).emit('syncState', { ...data, id: socket.id });
+        break;
+      }
+    }
+  });
+
   socket.on('disconnect', () => 
   {
     console.log('❌ Client disconnected:', socket.id);
