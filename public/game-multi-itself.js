@@ -29,7 +29,7 @@ socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
 socket.on('receiveGarbage', ({ lines, holeX }) => {
   for (let i = 0; i < lines; i++) {
     board.shift(); // 移除頂端一行
-    const newLine = new Array(COLS).fill(1);
+    const newLine = new Array(COLS).fill(9);
     newLine[holeX] = 0;
     board.push(newLine);
   }
