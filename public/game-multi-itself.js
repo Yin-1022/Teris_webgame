@@ -26,29 +26,14 @@ socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
   const alivePlayers = Object.entries(otherPlayers).filter(([_, p]) => !p.isGameOver);
 });
 
-socket.on('receiveGarbage', (garbage) => {
-  // 移除頂部行
-  for (let i = 0; i < garbage.length; i++) {
-    board.shift();
+socket.on('receiveGarbage', ({ lines, holeX }) => {
+  for (let i = 0; i < lines; i++) {
+    board.shift(); // 移除頂端一行
+    const newLine = new Array(COLS).fill(1);
+    newLine[holeX] = 0;
+    board.push(newLine);
   }
-  // 加入垃圾行到底部
-  board.push(...garbage);
-
-  draw(); // 重新繪製
 });
-
-function drop() {
-  currentPiece.y++;
-  if (collide()) {
-    currentPiece.y--;
-    mergePiece();
-    clearLines();
-    resetPiece();
-  }
-  dropCounter = 0;
-}
-
-
 
 function renderOtherPlayers() {
   const container = document.getElementById('multiplayerViews');
@@ -106,11 +91,6 @@ window.addEventListener('beforeunload', () => {
 });
 
 window.addEventListener('keydown', e => {
-
-  switch (e.key) {
-    case 'g':
-        socket.emit('sendGarbage', { lines: 4, from: playerName1 });
-   }     
 
   if (e.key === 'Escape') {
     const confirmed = confirm('確定要離開房間嗎？');

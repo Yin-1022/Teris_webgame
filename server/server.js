@@ -78,25 +78,15 @@ io.on('connection', socket => {
       }
   });
 
-  socket.on('sendGarbage', ({ lines, from }) => {
-    console.log(`🎯 送出 ${amount} 行垃圾給 ${target.name}`);
-  const amount = lines === 2 ? 1 : lines === 3 ? 2 : 4;
-
+  socket.on('sendGarbage', ({ lines }) => {
   for (const [pwd, players] of Object.entries(rooms)) {
     if (players.find(p => p.id === socket.id)) {
-      const others = players.filter(p => p.id !== socket.id);
-      if (others.length === 0) return;
+      const targets = players.filter(p => p.id !== socket.id);
+      if (targets.length === 0) return;
 
-      const target = others[Math.floor(Math.random() * others.length)];
-
-      // 建立固定垃圾行（有空洞）
-      const garbageRow = () => {
-        const hole = Math.floor(Math.random() * 10);
-        return Array.from({ length: 10 }, (_, i) => (i === hole ? 0 : 8));
-      };
-      const garbage = Array.from({ length: amount }, garbageRow);
-
-      io.to(target.id).emit('receiveGarbage', garbage);
+      const random = targets[Math.floor(Math.random() * targets.length)];
+      const holeX = Math.floor(Math.random() * 10); // 空格位置
+      io.to(random.id).emit('receiveGarbage', { lines, holeX });
       break;
     }
   }

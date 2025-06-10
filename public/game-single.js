@@ -271,6 +271,13 @@ function clearLines() {
     score += scoreTable[linesCleared] || (linesCleared * 200);
     scoreEl.textContent = score;
 
+    if (typeof socket !== 'undefined' && playerName1 && !isGameOver) {
+    const linesToSend = { 2: 1, 3: 2, 4: 4 }[linesCleared] || 0;
+    if (linesToSend > 0) {
+      socket.emit('sendGarbage', { lines: linesToSend });
+    }
+  }
+
     // 判斷是否為連續消行
     combo++;
     // 4行一次稱為TETRIS
@@ -288,13 +295,6 @@ function clearLines() {
     // 沒消行，combo 歸零
     combo = 0;
   }
-
-  if (typeof socket !== 'undefined' && linesCleared >= 2) {
-  socket.emit('sendGarbage', {
-    lines: linesCleared,
-    from: playerName1
-  });
-}
 }
 
 function rotate(matrix) {
