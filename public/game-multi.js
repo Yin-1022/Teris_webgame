@@ -111,6 +111,9 @@ function returnToMenu() {
   document.getElementById('roomWrapper').style.display = 'none';
   menu.style.display = 'block';
 
+  const messages = document.getElementById('chatMessages');
+  if (messages) messages.innerHTML = '';
+
   console.log('↩️ 返回主選單');
 }
 
