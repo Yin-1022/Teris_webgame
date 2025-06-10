@@ -43,6 +43,58 @@ button:hover {
   width: 120px;
 }
 
+.dialog {
+  display: none;
+  position: fixed;
+  z-index: 99;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.dialog-content {
+  background-color: #222;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  color: #fff;
+  box-shadow: 0 0 10px #000;
+  text-align: center;
+}
+
+.dialog input {
+  width: 90%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 5px;
+  border: none;
+  font-size: 1em;
+}
+
+.dialog button {
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background-color: #444;
+  color: #fff;
+  cursor: pointer;
+}
+
+.dialog button:hover {
+  background-color: #666;
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 #roomWrapper {
       display: none;
       margin-top: 30px;
