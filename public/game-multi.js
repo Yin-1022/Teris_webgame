@@ -106,6 +106,14 @@ function startGame() {
   alert('開始遊戲！(尚未實作連線邏輯)');
 }
 
+function returnToMenu() {
+
+  document.getElementById('roomWrapper').style.display = 'none';
+  menu.style.display = 'block';
+
+  console.log('↩️ 返回主選單');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('chatInput');
   input.addEventListener('keydown', (e) => {
