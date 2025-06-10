@@ -11,7 +11,13 @@
 
   <div id="menu">
     <button onclick="startSinglePlayer()">單人遊戲</button>
-    <button onclick="startMultiplayer()">多人遊戲</button>
+    <button id="multiBtn">多人遊戲</button>
+    <!-- <button onclick="startMultiplayer()">多人遊戲</button> -->
+  </div>
+
+  <div id="multiOptions" style="display:none; margin-top:10px;">
+    <button id="joinRoomBtn">加入房間</button>
+    <button id="createRoomBtn">建立新房間</button>
   </div>
 
   <div id="gameContainer">
@@ -27,5 +33,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="game-single.js"></script>
+  <script src="game-multi.js"></script>
 </body>
 </html>
