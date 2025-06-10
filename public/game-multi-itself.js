@@ -65,14 +65,23 @@ function returnToMenu() {
   document.getElementById('multiplayerViews').style.display = 'none';
 }
 
+function returnToRoom() {
+  canvas.style.display = 'none';
+  scoreBoard.style.display = 'none';
+  document.getElementById('roomWrapper').style.display = 'block';
+  document.getElementById('multiplayerViews').style.display = 'none';
+}
+
 socket.on('showGameEndOptions', (winnerName) => {
   if (!isRoomHost) return;
 
   const confirmed = confirm(`${winnerName} 獲勝！\n\n是否要重新一局？\n\n按「取消」則回到房間。`);
-  if (confirmed) {
-    location.reload(); // 重新整理頁面開始新一局（簡單方式）
-  } else {
-    returnToMenu();
+  if (confirmed) 
+  {
+    socket.emit('startGame', roomPassword); // 重新發送 startGame
+  } 
+  else {
+    returnToRoom();
   }
 });
 
