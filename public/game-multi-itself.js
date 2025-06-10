@@ -62,6 +62,7 @@ function returnToMenu() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
   menu.style.display = 'block';
+  document.getElementById('multiplayerViews').style.display = 'none';
 }
 
 window.addEventListener('beforeunload', () => {

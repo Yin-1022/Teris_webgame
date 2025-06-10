@@ -69,7 +69,7 @@ io.on('connection', socket => {
   socket.on('syncState', (data) => {
   for (const [pwd, players] of Object.entries(rooms)) {
       if (players.find(p => p.id === socket.id)) {
-        socket.to(pwd).emit('syncState', { ...data, id: socket.id });
+        io.to(pwd).emit('syncState', { ...data, id: socket.id });
         break;
       }
     }
