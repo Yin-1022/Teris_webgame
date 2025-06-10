@@ -1,4 +1,9 @@
 function startMultiplayerGame() {
+  if (isGameOver) {
+    console.log('❌ 已 Game Over，無法重新開始遊戲');
+    return;
+  }
+
   board = createBoard();
   score = 0;
   scoreEl.textContent = score;
@@ -23,13 +28,6 @@ socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
   renderOtherPlayers();
 
   const alivePlayers = Object.entries(otherPlayers).filter(([_, p]) => !p.isGameOver);
-  if (!isGameOver && alivePlayers.length === 0 && !winnerDeclared) {
-    winnerDeclared = true;
-    isGameOver = true;
-    drawWin();
-    freezeGame();
-  }
-
 });
 
 function renderOtherPlayers() {
@@ -68,32 +66,10 @@ function renderOtherPlayers() {
   }
 }
 
-function drawWin() {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
-  ctx.fillStyle = '#0f0';
-  ctx.font = 'bold 20px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('🏆 WINNER 🏆', canvas.width / 2, canvas.height / 2 + 10);
-}
-
-function freezeGame() {
-  // 阻止更新動畫
-  isGameOver = true;
-}
-
-
-function returnToMenu() {
-  canvas.style.display = 'none';
-  scoreBoard.style.display = 'none';
-  menu.style.display = 'block';
-  document.getElementById('multiplayerViews').style.display = 'none';
-}
-
 function returnToRoom() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
-  menu.style.display = 'block';
+  document.getElementById('multiplayerViews').style.display = 'block';
   document.getElementById('multiplayerViews').style.display = 'none';
 }
 
@@ -110,15 +86,6 @@ window.addEventListener('beforeunload', () => {
 });
 
 window.addEventListener('keydown', e => {
-
-  if (winnerDeclared && isRoomHost) {
-    if (e.key === ' ') {
-      socket.emit('startGame', roomPassword);
-    }
-    if (e.key === 'Escape') {
-      returnToRoom();
-    }
-  }
 
   if (e.key === 'Escape') {
     const confirmed = confirm('確定要離開房間嗎？');
