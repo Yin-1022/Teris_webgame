@@ -1,3 +1,5 @@
+const socket = io();
+
 let playerName1 = '';
 let playerName2 = '';
 let playerName3 = '';
@@ -47,8 +49,9 @@ function confirmCreate() {
   }
   closeDialog('createDialog');
   playerName1 = name; // 將輸入視為名字
-
   roomPassword = generateRoomPassword();
+
+  socket.emit('createRoom', { name: playerName1, password: roomPassword });
 
   // 隱藏主選單區域
   document.getElementById('menu').style.display = 'none';
@@ -76,7 +79,36 @@ function confirmJoin() {
     return;
   }
   closeDialog('joinDialog');
-  // 你可以在這裡進行 socket emit 或其他動作
+  
+  const name = prompt('請輸入你的名字');
+  if (!name) return;
+  playerName1 = name;
+  socket.emit('joinRoom', { name, password });
+
+  socket.on('roomJoined', ({ password, players }) => {
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('roomWrapper').style.display = 'block';
+
+    const passwordLabel = document.getElementById('roomPassword');
+    if (passwordLabel) passwordLabel.textContent = password;
+
+    const playerList = document.getElementById('players');
+    for (let i = 0; i < players.length; i++) {
+      if (playerList.children[i]) {
+        playerList.children[i].textContent = players[i].name;
+      }
+    }
+
+    appendSystemMessage(`${playerName1} 已進入房間`);
+  });
+
+    socket.on('playerJoined', ({ name }) => {
+    appendSystemMessage(`${name} 已進入房間`);
+  });
+
+  socket.on('errorMessage', msg => {
+    alert(msg);
+  });
 }
 
 function sendChat() {

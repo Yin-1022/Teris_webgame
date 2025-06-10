@@ -1,5 +1,3 @@
-const socket = io();
-
 let isGameOver = false;
 let room = null;
 let holdPiece = null;
@@ -419,15 +417,6 @@ function returnToMenu() {
 
   console.log('↩️ 返回主選單');
 }
-
-socket.on('matchFound', data => {
-  room = data.room;
-  console.log('✅ Match found! Joined room:', room);
-});
-
-socket.on('opponentMove', move => {
-  console.log('📩 Received opponent move:', move);
-});
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {

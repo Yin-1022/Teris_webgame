@@ -3,6 +3,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 
+const rooms = {};
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -11,31 +13,44 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, '../public')));
 
-let waitingPlayer = null;
-
 io.on('connection', socket => {
   console.log('🔌 New client connected:', socket.id);
 
-  if (waitingPlayer) {
-    const room = `room-${waitingPlayer.id}-${socket.id}`;
-    socket.join(room);
-    waitingPlayer.join(room);
+  socket.on('createRoom', ({ name, password }) => {
+    socket.join(password);
+    rooms[password] = rooms[password] || [];
+    rooms[password].push({ id: socket.id, name });
+    socket.emit('roomJoined', { password, players: rooms[password] });
+    socket.to(password).emit('playerJoined', { name });
+    console.log(`🛠 房間 ${password} 建立，玩家: ${name}`);
+  });
 
-    socket.emit('matchFound', { room });
-    waitingPlayer.emit('matchFound', { room });
+  socket.on('joinRoom', ({ name, password }) => {
+    if (!rooms[password]) {
+      socket.emit('errorMessage', '房間不存在');
+      return;
+    }
 
-    waitingPlayer = null;
-  } else {
-    waitingPlayer = socket;
-  }
-
-  socket.on('playerMove', ({ room, data }) => {
-    socket.to(room).emit('opponentMove', data);
+    socket.join(password);
+    rooms[password].push({ id: socket.id, name });
+    socket.emit('roomJoined', { password, players: rooms[password] });
+    socket.to(password).emit('playerJoined', { name });
+    console.log(`✅ 玩家 ${name} 加入房間 ${password}`);
   });
 
   socket.on('disconnect', () => {
     console.log('❌ Client disconnected:', socket.id);
-    if (waitingPlayer === socket) waitingPlayer = null;
+    for (const [pwd, players] of Object.entries(rooms)) {
+      const idx = players.findIndex(p => p.id === socket.id);
+      if (idx !== -1) {
+        const leftPlayer = players.splice(idx, 1)[0];
+        socket.to(pwd).emit('playerLeft', { name: leftPlayer.name });
+        if (players.length === 0) {
+          delete rooms[pwd];
+        }
+        break;
+      }
+    }
   });
 });
 
