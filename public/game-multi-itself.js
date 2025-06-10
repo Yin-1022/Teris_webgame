@@ -22,14 +22,18 @@ socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
   otherPlayers[id] = { name, board, currentPiece, isGameOver };
   renderOtherPlayers();
 
-  const alivePlayers = Object.entries(otherPlayers).filter(([_, p]) => !p.isGameOver);
-  if (!isGameOver && alivePlayers.length === 0 && !winnerDeclared) {
+  // 🔍 勝利條件檢查
+  const alivePlayers = Object.values(otherPlayers).filter(p => !p.isGameOver);
+  if (!isGameOver && !winnerDeclared && alivePlayers.length === 1 && alivePlayers[0].name === playerName1) {
     winnerDeclared = true;
-    isGameOver = true;
     drawWin();
-    freezeGame();
+    isGameOver = true;
   }
+});
 
+socket.on('syncState', ({ id, name, board, currentPiece, isGameOver }) => {
+  otherPlayers[id] = { name, board, currentPiece, isGameOver };
+  renderOtherPlayers();
 });
 
 function renderOtherPlayers() {
@@ -49,6 +53,9 @@ function renderOtherPlayers() {
     if (player.isGameOver) {
       drawMatrixGray(player.board, 0, 0, ctx);
       drawMatrixGray(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx);
+      if (player.win) {
+        drawWin(ctx);
+      }
     } else {
       drawMatrix(player.board, 0, 0, ctx, false);
       drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx, false);
@@ -68,32 +75,19 @@ function renderOtherPlayers() {
   }
 }
 
-function drawWin() {
+function drawWin(ctx = window.ctx) {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
   ctx.fillRect(0, canvas.height / 2 - 40, canvas.width, 80);
   ctx.fillStyle = '#0f0';
-  ctx.font = 'bold 20px Arial';
+  ctx.font = 'bold 24px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText('🏆 WINNER 🏆', canvas.width / 2, canvas.height / 2 + 10);
-}
-
-function freezeGame() {
-  // 阻止更新動畫
-  isGameOver = true;
-}
-
-
-function returnToMenu() {
-  canvas.style.display = 'none';
-  scoreBoard.style.display = 'none';
-  menu.style.display = 'block';
-  document.getElementById('multiplayerViews').style.display = 'none';
+  ctx.fillText('🏆 WINNER 🏆', canvas.width / 2, canvas.height / 2 + 12);
 }
 
 function returnToRoom() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
-  menu.style.display = 'block';
+  document.getElementById('roomWrapper').style.display = 'block';
   document.getElementById('multiplayerViews').style.display = 'none';
 }
 
@@ -110,16 +104,6 @@ window.addEventListener('beforeunload', () => {
 });
 
 window.addEventListener('keydown', e => {
-
-  if (winnerDeclared && isRoomHost) {
-    if (e.key === ' ') {
-      socket.emit('startGame', roomPassword);
-    }
-    if (e.key === 'Escape') {
-      returnToRoom();
-    }
-  }
-
   if (e.key === 'Escape') {
     const confirmed = confirm('確定要離開房間嗎？');
     if (confirmed) {

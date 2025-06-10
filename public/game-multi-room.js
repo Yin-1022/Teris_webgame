@@ -196,7 +196,7 @@ socket.on('gameStarted', () => {
   document.getElementById('roomWrapper').style.display = 'none';
   document.getElementById('gameCanvas').style.display = 'block';
   document.getElementById('scoreBoard').style.display = 'block';
-  document.getElementById('multiplayerViews').style.display = 'flex';
+  
 
   // 可依需求顯示 multiplayer scoreboard
   startMultiplayerGame(); // 你會在 game-multi-itself.js 中實作這個
