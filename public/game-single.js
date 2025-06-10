@@ -390,10 +390,6 @@ function update(time = 0) {
     });
   }
 
-  if (isGameOver && isRoomHost && checkIfOnlyOneAlive()) {
-    showRestartOptions(); // 你可以自己實作 UI 顯示「再玩一次」或「回房間」按鈕
-  }
-
   if (!isGameOver) {
     requestAnimationFrame(update);
   }

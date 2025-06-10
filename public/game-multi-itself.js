@@ -58,44 +58,23 @@ function renderOtherPlayers() {
   }
 }
 
-function checkIfOnlyOneAlive() {
-  const aliveCount = Object.values(otherPlayers).filter(p => !p.isGameOver).length + (isGameOver ? 0 : 1);
-  return aliveCount === 1;
-}
-
-function showRestartOptions() {
-  if (document.getElementById('restartOptions')) return; // 已顯示過就不再新增
-
-  const container = document.createElement('div');
-  container.id = 'restartOptions';
-  container.style.marginTop = '20px';
-
-  const restartBtn = document.createElement('button');
-  restartBtn.textContent = '再玩一次';
-  restartBtn.onclick = () => {
-    container.remove();
-    socket.emit('startGame', roomPassword); // 重新發送 startGame
-  };
-
-  const backBtn = document.createElement('button');
-  backBtn.textContent = '返回房間';
-  backBtn.onclick = () => {
-    container.remove();
-    returnToMenu();
-  };
-
-  container.appendChild(restartBtn);
-  container.appendChild(backBtn);
-
-  document.body.appendChild(container);
-}
-
 function returnToMenu() {
   canvas.style.display = 'none';
   scoreBoard.style.display = 'none';
   menu.style.display = 'block';
   document.getElementById('multiplayerViews').style.display = 'none';
 }
+
+socket.on('showGameEndOptions', (winnerName) => {
+  if (!isRoomHost) return;
+
+  const confirmed = confirm(`${winnerName} 獲勝！\n\n是否要重新一局？\n\n按「取消」則回到房間。`);
+  if (confirmed) {
+    location.reload(); // 重新整理頁面開始新一局（簡單方式）
+  } else {
+    returnToMenu();
+  }
+});
 
 window.addEventListener('beforeunload', () => {
   socket.emit('syncState', {
