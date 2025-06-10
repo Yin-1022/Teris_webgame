@@ -216,6 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmJoin();
     }
   });
+
+  const createNameInput = document.getElementById('createName');
+  createNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      confirmCreate();
+    }
+  });
+
 });
 
 window.addEventListener('keydown', e => {
