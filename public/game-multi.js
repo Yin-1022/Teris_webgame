@@ -115,12 +115,8 @@ function sendChat() {
   const input = document.getElementById('chatInput');
   const msg = input.value.trim();
   if (msg) {
-    const messages = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.textContent = `${playerName1}: ${msg}`;
-    messages.appendChild(div);
+    socket.emit('chatMessage', { name: playerName1, text: msg });
     input.value = '';
-    messages.scrollTop = messages.scrollHeight;
   }
 }
 
@@ -167,6 +163,21 @@ function returnToMenu() {
 
 socket.on('playerLeft', ({ name }) => {
   appendSystemMessage(`${name} 已離開房間`);
+});
+
+socket.on('chatMessage', ({ name, text }) => {
+  const messages = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.textContent = `${name}: ${text}`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+});
+
+socket.on('updatePlayerList', (players) => {
+  const playerList = document.getElementById('players');
+  for (let i = 0; i < playerList.children.length; i++) {
+    playerList.children[i].textContent = players[i]?.name || `玩家${i+1}`;
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () => {

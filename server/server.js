@@ -22,6 +22,7 @@ io.on('connection', socket => {
     rooms[password].push({ id: socket.id, name });
     socket.emit('roomJoined', { password, players: rooms[password] });
     socket.to(password).emit('playerJoined', { name });
+    io.to(password).emit('updatePlayerList', rooms[password]);
     console.log(`🛠 房間 ${password} 建立，玩家: ${name}`);
   });
 
@@ -40,6 +41,7 @@ io.on('connection', socket => {
     rooms[password].push({ id: socket.id, name });
     socket.emit('roomJoined', { password, players: rooms[password] });
     socket.to(password).emit('playerJoined', { name });
+    io.to(password).emit('updatePlayerList', rooms[password]);
     console.log(`✅ 玩家 ${name} 加入房間 ${password}`);
   });
 
@@ -51,6 +53,15 @@ io.on('connection', socket => {
     }
   });
 
+  socket.on('chatMessage', ({ name, text }) => {
+    for (const [pwd, players] of Object.entries(rooms)) {
+      if (players.find(p => p.id === socket.id)) {
+        io.to(pwd).emit('chatMessage', { name, text });
+        break;
+      }
+    }
+  });
+
   socket.on('disconnect', () => 
   {
     console.log('❌ Client disconnected:', socket.id);
@@ -59,6 +70,7 @@ io.on('connection', socket => {
       if (idx !== -1) {
         const leftPlayer = players.splice(idx, 1)[0];
         socket.to(pwd).emit('playerLeft', { name: leftPlayer.name });
+        io.to(pwd).emit('updatePlayerList', players);
         if (players.length === 0) {
           delete rooms[pwd];
         }
