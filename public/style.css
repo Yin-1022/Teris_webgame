@@ -39,10 +39,10 @@ button:hover {
 }
 
 #multiplayerOptions {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 #multiplayerOptions button {
   display: block;
-  margin: 10px auto; /* 居中 */
+  margin: 5px auto; /* 居中 */
 }
