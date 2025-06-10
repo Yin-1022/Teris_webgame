@@ -2,6 +2,16 @@ let playerName1 = '';
 let playerName2 = '';
 let playerName3 = '';
 let playerName4 = '';
+let roomPassword = '';
+
+function generateRoomPassword() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let password = '';
+  for (let i = 0; i < 6; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
 
 function toggleMultiplayerOptions() 
 {
@@ -38,6 +48,8 @@ function confirmCreate() {
   closeDialog('createDialog');
   playerName1 = name; // 將輸入視為名字
 
+  roomPassword = generateRoomPassword();
+
   // 隱藏主選單區域
   document.getElementById('menu').style.display = 'none';
 
@@ -47,6 +59,11 @@ function confirmCreate() {
   const playerList = document.getElementById('players');
   if (playerList && playerList.children.length > 0) {
     playerList.children[0].textContent = playerName1;
+  }
+
+  const passwordLabel = document.getElementById('roomPassword');
+  if (passwordLabel) {
+    passwordLabel.textContent = roomPassword;
   }
 
   appendSystemMessage(`${playerName1} 已進入房間`);
