@@ -355,37 +355,31 @@ function randomType() {
 }
 
 function update(time = 0) {
-  
-  if (isGameOver) return;
-
   const deltaTime = time - lastTime;
   lastTime = time;
-  dropInterval = 400;
-  dropCounter += deltaTime;
-  if (dropCounter > dropInterval) {
-    drop();
-  }
-  if (keyState.left && time - moveTimer.left > moveDelay) {
-    move(-1);
-    moveTimer.left = time;
-  }
-  if (keyState.right && time - moveTimer.right > moveDelay) {
-    move(1);
-    moveTimer.right = time;
-  }
-  if (keyState.down && time - moveTimer.down > moveDelay) {
-    drop();
-    moveTimer.down = time;
-  }
-  draw();
 
-  if (typeof socket !== 'undefined' && playerName1) {
-    socket.emit('syncState', {
-      board,
-      currentPiece,
-      name: playerName1
-    });
+  if (!isGameOver)
+  {
+    dropInterval = 400;
+    dropCounter += deltaTime;
+    if (dropCounter > dropInterval) {
+      drop();
+    }
+    if (keyState.left && time - moveTimer.left > moveDelay) {
+      move(-1);
+      moveTimer.left = time;
+    }
+    if (keyState.right && time - moveTimer.right > moveDelay) {
+      move(1);
+      moveTimer.right = time;
+    }
+    if (keyState.down && time - moveTimer.down > moveDelay) {
+      drop();
+      moveTimer.down = time;
+    }
   }
+  
+  draw();
 
   if (typeof socket !== 'undefined' && playerName1) {
     socket.emit('syncState', {
