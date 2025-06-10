@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const lastKnownState = {};
 
 const rooms = {};
 
@@ -67,29 +68,14 @@ io.on('connection', socket => {
   });
 
   socket.on('syncState', (data) => {
-  for (const [pwd, players] of Object.entries(rooms)) {
-    const player = players.find(p => p.id === socket.id);
-    if (player) {
-      // 將最新狀態記下來
-      player.state = {
-        board: data.board,
-        currentPiece: data.currentPiece,
-        isGameOver: data.isGameOver
-      };
-
-      // 廣播給所有人（包含自己）
-      io.to(pwd).emit('syncState', {
-        id: socket.id,
-        name: data.name,
-        board: data.board,
-        currentPiece: data.currentPiece,
-        isGameOver: data.isGameOver
-      });
-
-      break;
-    }
-  }
-});
+    lastKnownState[socket.id] = data;
+    for (const [pwd, players] of Object.entries(rooms)) {
+        if (players.find(p => p.id === socket.id)) {
+          socket.to(pwd).emit('syncState', { ...data, id: socket.id });
+          break;
+        }
+      }
+  });
 
   socket.on('disconnect', () => 
   {
@@ -98,6 +84,16 @@ io.on('connection', socket => {
       const idx = players.findIndex(p => p.id === socket.id);
       if (idx !== -1) {
         const leftPlayer = players.splice(idx, 1)[0];
+
+          // 🔧 新增：傳送灰磚畫面狀態
+        socket.to(pwd).emit('syncState', {
+          id: socket.id,
+          name: leftPlayer.name,
+          board: lastKnownState[socket.id]?.board || [],
+          currentPiece: lastKnownState[socket.id]?.currentPiece || { shape: [], x: 0, y: 0 },
+          isGameOver: true
+        });
+
         socket.to(pwd).emit('playerLeft', { name: leftPlayer.name });
         io.to(pwd).emit('updatePlayerList', players);
         if (players.length === 0) {
