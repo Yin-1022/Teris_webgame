@@ -6,14 +6,13 @@ function startMultiplayerGame() {
   nextPiece = createPiece(randomType());
   resetPiece();
   update(); // 呼叫 animation loop
+  socket.emit('syncState', {
+    board,
+    currentPiece,
+    name: playerName1
+  });
   console.log('🎮 多人遊戲開始！');
 }
-
-socket.emit('syncState', {
-  board,
-  currentPiece,
-  name: playerName1
-});
 
 const otherPlayers = {};
 
