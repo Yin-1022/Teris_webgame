@@ -27,23 +27,25 @@ function renderOtherPlayers() {
 
   for (const [id, player] of Object.entries(otherPlayers)) {
     const canvas = document.createElement('canvas');
-    canvas.width = 150;
-    canvas.height = 300;
+    canvas.width = 300;
+    canvas.height = 600;
+    canvas.classList.add('multiplayer-canvas');
     const ctx = canvas.getContext('2d');
 
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawMatrix(player.board, 0, 0, ctx, false, 15); // 使用較小 blockSize
-    drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx, false, 15);
+    drawMatrix(player.board, 0, 0, ctx, false); // 使用預設 BLOCK_SIZE
+    drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx, false);
 
     const label = document.createElement('div');
     label.style.textAlign = 'center';
     label.style.color = '#fff';
-    label.style.fontSize = '12px';
+    label.style.fontSize = '14px';
     label.textContent = player.name;
 
     const wrapper = document.createElement('div');
+    wrapper.classList.add('multiplayer-view');
     wrapper.appendChild(canvas);
     wrapper.appendChild(label);
     container.appendChild(wrapper);
