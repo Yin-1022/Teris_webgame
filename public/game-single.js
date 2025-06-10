@@ -151,6 +151,14 @@ function draw() {
 
 function drawPreview() {
   previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+  previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+  if (!nextPiece) return;
+
+  const shape = nextPiece.shape;
+  const offsetX = Math.floor((previewCanvas.width / BLOCK_SIZE - shape[0].length) / 2);
+  const offsetY = Math.floor((previewCanvas.height / BLOCK_SIZE - shape.length) / 2);
+
   if (isGameOver) {
     drawMatrixGray(nextPiece.shape, 1, 1, previewCtx);
   } else {
@@ -160,6 +168,12 @@ function drawPreview() {
 
 function drawHold() {
   holdCtx.clearRect(0, 0, holdCanvas.width, holdCanvas.height);
+  if (!holdPiece) return;
+
+  const shape = holdPiece.shape;
+  const offsetX = Math.floor((holdCanvas.width / BLOCK_SIZE - shape[0].length) / 2);
+  const offsetY = Math.floor((holdCanvas.height / BLOCK_SIZE - shape.length) / 2);
+
    if (holdPiece) {
     if (isGameOver) {
       drawMatrixGray(holdPiece.shape, 1, 1, holdCtx);
