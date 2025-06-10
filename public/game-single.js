@@ -1,3 +1,5 @@
+const socket = io();
+
 let isGameOver = false;
 let room = null;
 let holdPiece = null;
@@ -378,6 +380,15 @@ function update(time = 0) {
     moveTimer.down = time;
   }
   draw();
+
+  if (typeof socket !== 'undefined' && playerName1) {
+    socket.emit('syncState', {
+      board,
+      currentPiece,
+      name: playerName1
+    });
+  }
+
   requestAnimationFrame(update);
 }
 

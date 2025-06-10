@@ -34,8 +34,8 @@ function renderOtherPlayers() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    drawMatrix(player.board, 0, 0, ctx);
-    drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx);
+    drawMatrix(player.board, 0, 0, ctx, false, 15); // 使用較小 blockSize
+    drawMatrix(player.currentPiece.shape, player.currentPiece.x, player.currentPiece.y, ctx, false, 15);
 
     const label = document.createElement('div');
     label.style.textAlign = 'center';
