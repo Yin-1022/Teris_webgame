@@ -58,6 +58,12 @@ function renderOtherPlayers() {
   }
 }
 
+function returnToMenu() {
+  canvas.style.display = 'none';
+  scoreBoard.style.display = 'none';
+  menu.style.display = 'block';
+}
+
 window.addEventListener('beforeunload', () => {
   socket.emit('syncState', {
     board,
@@ -70,12 +76,14 @@ window.addEventListener('beforeunload', () => {
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    socket.emit('syncState', {
-      board,
-      currentPiece,
-      name: playerName1,
-      isGameOver: true
-    });
+    const confirmed = confirm('確定要離開房間嗎？');
+    if (confirmed) {
+      socket.emit('syncState', {
+        board,
+        currentPiece,
+        name: playerName1,
+        isGameOver: true
+      });
     socket.disconnect();
     returnToMenu();
     return;
