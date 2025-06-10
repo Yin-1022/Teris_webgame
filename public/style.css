@@ -126,12 +126,17 @@ button:hover {
     display: flex;
     height: 40px;
     border-top: 1px solid #fff;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: hidden;
   }
   #chatInput {
-    flex: 8;
+    flex: 1;
     padding: 5px;
     border: none;
     font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
   }
   #playerList {
     width: 200px;
