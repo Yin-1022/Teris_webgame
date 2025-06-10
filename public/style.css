@@ -169,3 +169,7 @@ button:hover {
   #startButton:hover {
       background: #666;
   }
+
+  #roomInfo, #chatBox, #playerList {
+    box-sizing: border-box;
+  }

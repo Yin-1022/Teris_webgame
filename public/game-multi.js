@@ -1,3 +1,8 @@
+let playerName1 = '';
+let playerName2 = '';
+let playerName3 = '';
+let playerName4 = '';
+
 function toggleMultiplayerOptions() 
 {
   const options = document.getElementById('multiplayerOptions');
@@ -25,29 +30,33 @@ function closeDialog(id) {
 }
 
 function confirmCreate() {
-  const password = document.getElementById('createPassword').value.trim();
-  if (password === '') {
-    alert('請輸入密碼');
+  const name = document.getElementById('joinName').value.trim();
+  if (name === '') {
+    alert('請輸入名字');
     return;
   }
   closeDialog('createDialog');
-  console.log('✅ 建立房間，密碼：', password);
+  playerName1 = name; // 將輸入視為名字
 
   // 隱藏主選單區域
   document.getElementById('menu').style.display = 'none';
 
   // 顯示房間頁面內容 (內嵌 room.html 結構)
   document.getElementById('roomWrapper').style.display = 'block';
+
+  const playerList = document.getElementById('players');
+  if (playerList && playerList.children.length > 0) {
+    playerList.children[0].textContent = playerName1;
+  }
 }
 
 function confirmJoin() {
-  const name = document.getElementById('joinName').value.trim();
-  if (name === '') {
-    alert('請輸入名字');
+  const password = document.getElementById('createPassword').value.trim();
+  if (password === '') {
+    alert('請輸入密碼');
     return;
   }
   closeDialog('joinDialog');
-  console.log('✅ 加入遊戲，名稱：', name);
   // 你可以在這裡進行 socket emit 或其他動作
 }
 
