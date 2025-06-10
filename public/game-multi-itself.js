@@ -72,7 +72,9 @@ window.addEventListener('beforeunload', () => {
     name: playerName1,
     isGameOver: true
   });
-  socket.disconnect();
+  setTimeout(() => {
+    socket.disconnect();
+    }, 200);
 });
 
 window.addEventListener('keydown', e => {
@@ -85,7 +87,9 @@ window.addEventListener('keydown', e => {
         name: playerName1,
         isGameOver: true
       });
-      socket.disconnect();
+      setTimeout(() => {
+        socket.disconnect();
+        }, 200);
       returnToMenu();
     }
     return;
