@@ -92,6 +92,10 @@ window.addEventListener('beforeunload', () => {
 
 window.addEventListener('keydown', e => {
 
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+    e.preventDefault(); // 防止頁面滾動
+  }
+
   if (e.key === 'Escape') {
     const confirmed = confirm('確定要離開房間嗎？');
     if (confirmed) {
