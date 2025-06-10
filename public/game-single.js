@@ -357,6 +357,7 @@ function startSinglePlayer() {
   board = createBoard();
   score = 0;
   scoreEl.textContent = score;
+  holdPiece = null;
   nextPiece = createPiece(randomType());
   resetPiece();
   update();
