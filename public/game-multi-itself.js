@@ -76,14 +76,12 @@ window.addEventListener('beforeunload', () => {
 
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    const confirmed = confirm('確定要離開房間嗎？');
-    if (confirmed) {
-      socket.emit('syncState', {
-        board,
-        currentPiece,
-        name: playerName1,
-        isGameOver: true
-      });
+    socket.emit('syncState', {
+      board,
+      currentPiece,
+      name: playerName1,
+      isGameOver: true
+    });
     socket.disconnect();
     returnToMenu();
     return;
