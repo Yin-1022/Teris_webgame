@@ -1,5 +1,3 @@
-const socket = io();
-
 let isGameOver = false;
 let room = null;
 let holdPiece = null;
