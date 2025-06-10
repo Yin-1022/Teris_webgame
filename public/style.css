@@ -120,18 +120,42 @@ button:hover {
       border-bottom: 1px solid #fff;
   }
   #chatInputContainer {
-      display: flex;
+     display: flex;
+    height: 40px;
+    border-top: 1px solid #fff;
   }
   #chatInput {
-      flex: 1;
-      padding: 5px;
-      border: none;
+    flex: 1;
+    padding: 5px;
+    border: none;
+    font-size: 1em;
+  }
+  #chatInputContainer button {
+    width: 60px;
+    font-size: 1em;
+    border: none;
+    background: #444;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 0;
   }
   #playerList {
-      width: 200px;
-      border: 2px solid #fff;
-      padding: 10px;
-      height: 400px;
+    width: 200px;
+    border: 2px solid #fff;
+    padding: 0;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+  #players {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+  }
+  #players li {
+    border-bottom: 1px solid #fff;
+    padding: 10px;
   }
   #roomInfo {
       border: 2px solid #fff;
@@ -140,13 +164,13 @@ button:hover {
       width: 150px;
   }
   #startButton {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #444;
-      border: none;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
+    padding: 10px;
+    background: #444;
+    border: none;
+    color: #fff;
+    border-top: 2px solid #fff;
+    cursor: pointer;
+    border-radius: 0;
   }
   #startButton:hover {
       background: #666;
