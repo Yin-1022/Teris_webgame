@@ -90,11 +90,6 @@ function createBoard() {
   return matrix;
 }
 
-function updateHoldMessage(text) {
-  const holdMsgEl = document.getElementById('hold-message');
-  holdMsgEl.textContent = text || '';
-}
-
 function drawMatrix(matrix, offsetX, offsetY, context = ctx, ghost = false) {
   context.globalAlpha = ghost ? 0.3 : 1;
   matrix.forEach((row, y) => {
@@ -282,20 +277,18 @@ function clearLines() {
     combo++;
     // 4行一次稱為TETRIS
     if (linesCleared === 4) {
-      updateHoldMessage('🔥 TETRIS! 🔥');
+      comboMessage = '🔥 TETRIS! 🔥';
     } else if (combo > 1) {
-      updateHoldMessage = `COMBO x${combo}!`;
+      comboMessage = `COMBO x${combo}!`;
       score += combo * 50; // 每次combo額外加分
       scoreEl.textContent = score;
     } else {
-      updateHoldMessage = '';
+      comboMessage = '';
     }
-    clearTimeout(window.holdMsgTimeout);
-    window.holdMsgTimeout = setTimeout(() => updateHoldMessage(''), 1500);
+    comboMessageTimer = comboMessageDuration;
   } else {
     // 沒消行，combo 歸零
     combo = 0;
-    updateHoldMessage('');
   }
 }
 
