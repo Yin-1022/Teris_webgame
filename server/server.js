@@ -68,12 +68,28 @@ io.on('connection', socket => {
 
   socket.on('syncState', (data) => {
   for (const [pwd, players] of Object.entries(rooms)) {
-      if (players.find(p => p.id === socket.id)) {
-        socket.to(pwd).emit('syncState', { ...data, id: socket.id });
-        break;
-      }
+    const player = players.find(p => p.id === socket.id);
+    if (player) {
+      // 將最新狀態記下來
+      player.state = {
+        board: data.board,
+        currentPiece: data.currentPiece,
+        isGameOver: data.isGameOver
+      };
+
+      // 廣播給所有人（包含自己）
+      io.to(pwd).emit('syncState', {
+        id: socket.id,
+        name: data.name,
+        board: data.board,
+        currentPiece: data.currentPiece,
+        isGameOver: data.isGameOver
+      });
+
+      break;
     }
-  });
+  }
+});
 
   socket.on('disconnect', () => 
   {
