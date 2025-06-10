@@ -139,7 +139,7 @@ function appendSystemMessage(text) {
 }
 
 function startGame() {
-  alert('開始遊戲！(尚未實作連線邏輯)');
+  socket.emit('startGame', roomPassword);
 }
 
 function returnToMenu() {
