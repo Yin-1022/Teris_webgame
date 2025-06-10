@@ -14,6 +14,11 @@ const menu = document.getElementById('menu');
 const holdCanvas = document.getElementById('holdCanvas');
 const holdCtx = holdCanvas.getContext('2d');
 
+let combo = 0;              // 連續消行計數
+let comboMessage = '';      // 顯示的文字訊息
+let comboMessageTimer = 0;  // 訊息顯示時間計數（ms）
+const comboMessageDuration = 1500; // 顯示時間：1.5秒
+
 const COLS = 10;
 const ROWS = 20;
 const BLOCK_SIZE = 30;
@@ -147,6 +152,25 @@ function draw() {
     drawGhostPiece();
     drawMatrix(currentPiece.shape, currentPiece.x, currentPiece.y);
   }
+
+  if (comboMessageTimer > 0 && comboMessage) {
+    ctx.font = 'bold 24px Arial';
+    ctx.fillStyle = 'yellow';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 3;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 4;
+
+    const x = canvas.width / 2;
+    const y = canvas.height + 30;  // canvas正下方30px位置（canvas高度600底下）
+
+    ctx.strokeText(comboMessage, x, y);
+    ctx.fillText(comboMessage, x, y);
+
+    // 倒數計時
+    comboMessageTimer -= 16;  // 約每幀減16毫秒，搭配requestAnimationFrame速度
+  }
 }
 
 function drawPreview() {
@@ -255,8 +279,33 @@ function clearLines() {
   while (board.length < ROWS) {
     board.unshift(new Array(COLS).fill(0));
   }
-  score += linesCleared * 100;
-  scoreEl.textContent = score;
+
+  const scoreTable = {
+    1: 100,
+    2: 300,
+    3: 500,
+    4: 800
+  };
+
+  if (linesCleared > 0) {
+    score += scoreTable[linesCleared] || (linesCleared * 200);
+    scoreEl.textContent = score;
+
+    // 判斷是否為連續消行
+    combo++;
+    // 4行一次稱為TETRIS
+    if (linesCleared === 4) {
+      comboMessage = '🔥 TETRIS! 🔥';
+    } else if (combo > 1) {
+      comboMessage = `COMBO x${combo}!`;
+    } else {
+      comboMessage = '';
+    }
+    comboMessageTimer = comboMessageDuration;
+  } else {
+    // 沒消行，combo 歸零
+    combo = 0;
+  }
 }
 
 function rotate(matrix) {
