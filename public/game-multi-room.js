@@ -209,6 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
       sendChat();
     }
   });
+
+  const joinPasswordInput = document.getElementById('joinPassword');
+  joinPasswordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      confirmJoin();
+    }
+  });
 });
 
 window.addEventListener('keydown', e => {
