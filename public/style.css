@@ -38,11 +38,7 @@ button:hover {
   margin-top: 20px;
 }
 
-#multiplayerOptions {
-  margin-top: 20px;
-}
-
 #multiplayerOptions button {
-  display: block;
-  margin: 10px auto; /* 居中 */
+  margin: 5px 0;
+  width: 120px;
 }
