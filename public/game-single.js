@@ -360,7 +360,7 @@ function update(time = 0) {
 
   const deltaTime = time - lastTime;
   lastTime = time;
-  dropInterval = 1000;
+  dropInterval = 400;
   dropCounter += deltaTime;
   if (dropCounter > dropInterval) {
     drop();
@@ -387,7 +387,18 @@ function update(time = 0) {
     });
   }
 
-  requestAnimationFrame(update);
+  if (typeof socket !== 'undefined' && playerName1) {
+    socket.emit('syncState', {
+      board,
+      currentPiece,
+      name: playerName1,
+      isGameOver
+    });
+  }
+
+  if (!isGameOver) {
+    requestAnimationFrame(update);
+  }
 }
 
 function startSinglePlayer() {
