@@ -37,6 +37,19 @@ socket.on('receiveGarbage', (garbage) => {
   draw(); // 重新繪製
 });
 
+function drop() {
+  currentPiece.y++;
+  if (collide()) {
+    currentPiece.y--;
+    mergePiece();
+    clearLines();
+    resetPiece();
+  }
+  dropCounter = 0;
+}
+
+
+
 function renderOtherPlayers() {
   const container = document.getElementById('multiplayerViews');
   container.innerHTML = '';
@@ -93,6 +106,11 @@ window.addEventListener('beforeunload', () => {
 });
 
 window.addEventListener('keydown', e => {
+
+  switch (e.key) {
+    case 'g':
+        socket.emit('sendGarbage', { lines: 4, from: playerName1 });
+   }     
 
   if (e.key === 'Escape') {
     const confirmed = confirm('確定要離開房間嗎？');

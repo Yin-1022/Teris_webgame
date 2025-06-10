@@ -79,6 +79,7 @@ io.on('connection', socket => {
   });
 
   socket.on('sendGarbage', ({ lines, from }) => {
+    console.log(`🎯 送出 ${amount} 行垃圾給 ${target.name}`);
   const amount = lines === 2 ? 1 : lines === 3 ? 2 : 4;
 
   for (const [pwd, players] of Object.entries(rooms)) {
