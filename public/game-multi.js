@@ -34,7 +34,7 @@ function confirmCreate() {
   console.log('✅ 建立房間，密碼：', password);
 
   // 隱藏主選單區域
-  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('menu').style.display = 'none';
 
   // 顯示房間頁面內容 (內嵌 room.html 結構)
   document.getElementById('roomWrapper').style.display = 'block';
