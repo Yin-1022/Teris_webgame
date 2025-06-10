@@ -30,7 +30,7 @@ function closeDialog(id) {
 }
 
 function confirmCreate() {
-  const name = document.getElementById('joinName').value.trim();
+  const name = document.getElementById('createName').value.trim();
   if (name === '') {
     alert('請輸入名字');
     return;
@@ -51,7 +51,7 @@ function confirmCreate() {
 }
 
 function confirmJoin() {
-  const password = document.getElementById('createPassword').value.trim();
+  const password = document.getElementById('joinPassword').value.trim();
   if (password === '') {
     alert('請輸入密碼');
     return;
